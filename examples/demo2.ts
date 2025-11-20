@@ -1,4 +1,4 @@
-import type { GanttData } from '../src/core/types';
+import type { GanttData, Task } from '../src/core/types';
 
 export function getDemo2Data(): GanttData {
   return [
@@ -111,12 +111,14 @@ export function getDemo2Data(): GanttData {
         {
           id: `uvt_${i}_2`,
           name: `休假 ${i}`,
+          centerRemark: '请假',
           type: 'leave',
           actualStart: '2025-12-05',
           actualEnd: '2025-12-08',
+          actualBgColor: '#fceeb7',
           styleClass: 'demo2-leave'
         }
       ]
-    }))
+    })) as GanttData
   ]
 };

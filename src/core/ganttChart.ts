@@ -693,11 +693,13 @@ export class GanttChart {
     const taskY = y + this.config.rowHeight * 0.15;
     const taskHeight = this.config.rowHeight * 0.7;
     const styles = this.getTaskStyles(task);
+    const textY = y + this.config.rowHeight / 2;
 
     if (this.config.showActual && pos.x_actual_start && pos.x_actual_end) {
       const aWidth = pos.x_actual_end! - pos.x_actual_start;
       ctx.fillStyle = task.actualBgColor ? task.actualBgColor : styles.actualBg;
       ctx.fillRect(pos.x_actual_start, taskY, aWidth, taskHeight);
+
     }
 
     if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
@@ -709,7 +711,6 @@ export class GanttChart {
       ctx.stroke();
     }
 
-    const textY = y + this.config.rowHeight / 2;
     ctx.fillStyle = '#333';
     if (this.config.showLeftRemark && task.leftRemark) {
       ctx.textAlign = 'right';
@@ -720,9 +721,12 @@ export class GanttChart {
       ctx.fillText(task.rightRemark, pos.x_plan_end + 8, textY);
     }
     if (this.config.showCenterRemark && task.centerRemark) {
+      const centerX = pos.x_actual_start! + (pos.x_actual_end! - pos.x_actual_start!) / 2;
+
       ctx.textAlign = 'center';
-      ctx.fillText(task.centerRemark, pos.x_actual_start!, textY);
+      ctx.fillText(task.centerRemark, centerX!, textY, pos.x_actual_end! - pos.x_actual_start!);
     }
+
   }
 
   private getTaskStyles(task: Task): { planBorder: string; actualBg: string } {
@@ -789,7 +793,7 @@ export class GanttChart {
   private getTaskTooltipHtml(task: Task): string {
     if (task.type === 'leave') {
       const days = DateUtils.diffDaysInclusive(new Date(task.actualStart!), new Date(task.actualEnd!));
-      return `<div><span style="color: #f43f5e;">■</span> <strong>${task.name} (${days}天)</strong><br><span class="ml-4">${task.actualStart} 到 ${task.actualEnd}</span></div>`;
+      return `<div><span style="color: ${task.actualBgColor ? task.actualBgColor : '#f43f5e'};">■</span> <strong>${task.name} (${days}天)</strong><br><span class="ml-4">${task.actualStart} 到 ${task.actualEnd}</span></div>`;
     }
     let html = `<div><span style="color: ${this.getTaskStyles(task).planBorder};">■</span> <strong>${task.name
       }</strong><br>`;
