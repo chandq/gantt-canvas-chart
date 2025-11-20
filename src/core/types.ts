@@ -9,7 +9,10 @@ export interface Task {
   dependencies?: string[];
   leftRemark?: string;
   rightRemark?: string;
+  centerRemark?: string;
   styleClass?: string;
+  planBorderColor?: string;
+  actualBgColor?: string;
 }
 
 export interface Row {
@@ -18,12 +21,12 @@ export interface Row {
   tasks: Task[];
 }
 
-export interface GanttData {
-  rows: Row[];
-}
+export type GanttData = Row[]
 
 export interface GanttConfig {
   viewMode?: 'Day' | 'Week' | 'Month' | 'Year';
+  planBorderColor?: string;
+  actualBgColor?: string;
   rowHeight?: number;
   headerHeight?: number;
   showPlan?: boolean;
@@ -32,6 +35,7 @@ export interface GanttConfig {
   showColLines?: boolean;
   showLeftRemark?: boolean;
   showRightRemark?: boolean;
+  showCenterRemark?: boolean;
   showTooltip?: boolean;
 }
 

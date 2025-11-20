@@ -90,7 +90,7 @@ body {
   background: white;
 }
 
-.gantt-chart-container {
+.__gantt-chart-container {
   flex-grow: 1;
   overflow: auto;
   position: relative;
@@ -98,7 +98,7 @@ body {
   height: 100%;
 }
 
-.gantt-scroll-dummy {
+.__gantt-scroll-dummy {
   position: absolute;
   top: 0;
   left: 0;
@@ -108,7 +108,7 @@ body {
 }
 
 /* Canvas layers */
-.gantt-header-canvas {
+.__gantt-header-canvas {
   position: sticky;
   top: 0;
   left: 0;
@@ -117,7 +117,7 @@ body {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.gantt-main-canvas {
+.__gantt-main-canvas {
   position: sticky;
   top: 56px; /* Corresponds to header height */
   left: 0;
@@ -125,7 +125,7 @@ body {
 }
 
 /* Tooltip */
-#gantt-tooltip {
+#__gantt-tooltip {
   position: fixed;
   display: none;
   padding: 12px;

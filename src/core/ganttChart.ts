@@ -36,7 +36,29 @@ export class GanttChart {
   private taskPositions: Map<string, TaskPosition>;
   private taskMap: Map<string, { row: number; task: Task }>;
 
-  constructor(container: HTMLElement, data: GanttData, config: GanttConfig = {}) {
+  constructor(root: HTMLElement, data: GanttData, config: GanttConfig = {}) {
+    const container = document.createElement('div');
+    const scrollEl = document.createElement('div');
+    const headerCanvas = document.createElement('canvas');
+    const mainCanvas = document.createElement('canvas');
+    container.setAttribute('id', '__gantt-chart-container');
+    container.classList.add('__gantt-chart-container');
+
+    scrollEl.setAttribute('id', '__gantt-scroll-dummy');
+    scrollEl.classList.add('__gantt-scroll-dummy');
+    headerCanvas.setAttribute('id', '__gantt-header-canvas');
+    headerCanvas.classList.add('__gantt-header-canvas');
+    mainCanvas.setAttribute('id', '__gantt-main-canvas');
+    mainCanvas.classList.add('__gantt-main-canvas');
+
+    container.appendChild(scrollEl)
+    container.appendChild(headerCanvas)
+    container.appendChild(mainCanvas)
+
+    root.appendChild(container);
+
+
+
     this.container = container;
     this.data = data;
     this.config = {
@@ -49,14 +71,20 @@ export class GanttChart {
       showColLines: true,
       showLeftRemark: false,
       showRightRemark: false,
+      showCenterRemark: false,
       showTooltip: true,
+
+      planBorderColor: '#caeed2',
+      actualBgColor: '#78c78f',
       ...config
     };
 
-    this.headerCanvas = document.getElementById('gantt-header-canvas') as HTMLCanvasElement;
-    this.mainCanvas = document.getElementById('gantt-main-canvas') as HTMLCanvasElement;
-    this.scrollDummy = document.getElementById('gantt-scroll-dummy')!;
-    this.tooltip = document.getElementById('gantt-tooltip')!;
+
+    this.headerCanvas = headerCanvas as HTMLCanvasElement;
+    this.mainCanvas = mainCanvas as HTMLCanvasElement;
+    this.scrollDummy = scrollEl!;
+    this.tooltip = document.getElementById('__gantt-tooltip')!;
+    this.mainCanvas.style.top = `${this.config.headerHeight}px`;
 
     this.headerCtx = this.headerCanvas.getContext('2d')!;
     this.mainCtx = this.mainCanvas.getContext('2d')!;
@@ -91,7 +119,7 @@ export class GanttChart {
 
   private buildTaskMap(): void {
     this.taskMap.clear();
-    this.data.rows.forEach((row, rowIndex) => {
+    this.data.forEach((row, rowIndex) => {
       row.tasks.forEach(task => this.taskMap.set(task.id, { row: rowIndex, task }));
     });
   }
@@ -126,7 +154,7 @@ export class GanttChart {
   private calculateFullTimeline(): void {
     let minDate = new Date(9999, 0, 1);
     let maxDate = new Date(1000, 0, 1);
-    if (this.data.rows.length === 0) {
+    if (this.data.length === 0) {
       minDate = new Date();
       maxDate = DateUtils.addDays(new Date(), 30);
     } else {
@@ -222,7 +250,7 @@ export class GanttChart {
   private updateDimensions(): void {
     const totalDays = DateUtils.diffDays(this.timelineStart, this.timelineEnd) + 1;
     this.totalWidth = totalDays * this.pixelsPerDay;
-    this.totalHeight = this.data.rows.length * this.config.rowHeight + this.config.headerHeight;
+    this.totalHeight = this.data.length * this.config.rowHeight + this.config.headerHeight;
     this.scrollDummy.style.width = `${this.totalWidth}px`;
     this.scrollDummy.style.height = `${this.totalHeight}px`;
   }
@@ -238,8 +266,8 @@ export class GanttChart {
 
   private calculateAllTaskPositions(): void {
     this.taskPositions.clear();
-    for (let i = 0; i < this.data.rows.length; i++) {
-      const row = this.data.rows[i];
+    for (let i = 0; i < this.data.length; i++) {
+      const row = this.data[i];
       const y = i * this.config.rowHeight;
       row.tasks.forEach(task => {
         const x_plan_start = this.dateToX(new Date(task.planStart!));
@@ -537,8 +565,8 @@ export class GanttChart {
     ctx.textBaseline = 'middle';
     ctx.font = '12px Arial';
 
-    for (let i = 0; i < this.data.rows.length; i++) {
-      const row = this.data.rows[i];
+    for (let i = 0; i < this.data.length; i++) {
+      const row = this.data[i];
       const y = i * this.config.rowHeight;
 
       if (y + this.config.rowHeight < this.scrollTop || y > this.scrollTop + this.viewportHeight) continue;
@@ -566,7 +594,7 @@ export class GanttChart {
     ctx.beginPath();
 
     if (this.config.showRowLines) {
-      for (let i = 0; i <= this.data.rows.length; i++) {
+      for (let i = 0; i <= this.data.length; i++) {
         const y = i * this.config.rowHeight;
         if (y < this.scrollTop || y > this.scrollTop + this.viewportHeight) continue;
         ctx.moveTo(this.scrollLeft, y);
@@ -666,14 +694,14 @@ export class GanttChart {
     const taskHeight = this.config.rowHeight * 0.7;
     const styles = this.getTaskStyles(task);
 
-    if (this.config.showActual && pos.x_actual_start) {
+    if (this.config.showActual && pos.x_actual_start && pos.x_actual_end) {
       const aWidth = pos.x_actual_end! - pos.x_actual_start;
-      ctx.fillStyle = styles.actualBg;
+      ctx.fillStyle = task.actualBgColor ? task.actualBgColor : styles.actualBg;
       ctx.fillRect(pos.x_actual_start, taskY, aWidth, taskHeight);
     }
 
-    if (this.config.showPlan) {
-      ctx.strokeStyle = styles.planBorder;
+    if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
+      ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : styles.planBorder;
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.moveTo(pos.x_plan_start, taskY);
@@ -690,6 +718,10 @@ export class GanttChart {
     if (this.config.showRightRemark && task.rightRemark) {
       ctx.textAlign = 'left';
       ctx.fillText(task.rightRemark, pos.x_plan_end + 8, textY);
+    }
+    if (this.config.showCenterRemark && task.centerRemark) {
+      ctx.textAlign = 'center';
+      ctx.fillText(task.centerRemark, pos.x_actual_start!, textY);
     }
   }
 
@@ -720,8 +752,8 @@ export class GanttChart {
     const rowIndex = Math.floor(chartY / this.config.rowHeight);
     const date = this.xToDate(chartX);
 
-    if (rowIndex < 0 || rowIndex >= this.data.rows.length) return this.handleMouseLeave();
-    const row = this.data.rows[rowIndex];
+    if (rowIndex < 0 || rowIndex >= this.data.length) return this.handleMouseLeave();
+    const row = this.data[rowIndex];
 
     const overlappingTasks = row.tasks.filter(task => {
       const pStart = new Date(task.planStart!),
