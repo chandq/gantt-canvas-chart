@@ -121,9 +121,11 @@ export function getDemo1Data(): GanttData {
           name: '集成测试',
           planStart: '2025-11-21',
           planEnd: '2025-11-28',
+          actualStart: '2025-11-22',
           dependencies: ['t3', 't5'],
           leftRemark: '测试组',
-          rightRemark: '未开始',
+          rightRemark: '进行中',
+          actualBgColor: '#4984ec',
           styleClass: 'demo1-task'
         }
       ]

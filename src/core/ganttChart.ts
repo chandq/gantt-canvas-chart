@@ -6,6 +6,7 @@ import {
   VisibleDateRange,
   Task
 } from './types';
+import { firstValidValue } from './utils';
 
 export class GanttChart {
   private container: HTMLElement;
@@ -274,8 +275,10 @@ export class GanttChart {
         const x_plan_end = this.dateToX(DateUtils.addDays(new Date(task.planEnd!), 1));
         let x_actual_start: number | null = null,
           x_actual_end: number | null = null;
-        if (task.actualStart && task.actualEnd) {
+        if (task.actualStart) {
           x_actual_start = this.dateToX(new Date(task.actualStart));
+        }
+        if (task.actualEnd) {
           x_actual_end = this.dateToX(DateUtils.addDays(new Date(task.actualEnd), 1));
         }
         this.taskPositions.set(task.id, {
@@ -695,16 +698,16 @@ export class GanttChart {
     const styles = this.getTaskStyles(task);
     const textY = y + this.config.rowHeight / 2;
 
-    if (this.config.showActual && pos.x_actual_start && pos.x_actual_end) {
-      const aWidth = pos.x_actual_end! - pos.x_actual_start;
-      ctx.fillStyle = task.actualBgColor ? task.actualBgColor : styles.actualBg;
+    if (this.config.showActual && pos.x_actual_start) {
+      const aWidth = (pos.x_actual_end ? pos.x_actual_end : pos.x_plan_end)! - pos.x_actual_start;
+      ctx.fillStyle = task.actualBgColor ? task.actualBgColor : this.config.actualBgColor;
       ctx.fillRect(pos.x_actual_start, taskY, aWidth, taskHeight);
 
     }
 
     if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
-      ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : styles.planBorder;
-      ctx.lineWidth = 3;
+      ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : this.config.planBorderColor;
+      ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(pos.x_plan_start, taskY);
       ctx.lineTo(pos.x_plan_start + width, taskY);
@@ -714,11 +717,11 @@ export class GanttChart {
     ctx.fillStyle = '#333';
     if (this.config.showLeftRemark && task.leftRemark) {
       ctx.textAlign = 'right';
-      ctx.fillText(task.leftRemark, pos.x_plan_start - 8, textY);
+      ctx.fillText(task.leftRemark, Math.min(...[pos.x_plan_start, pos.x_actual_start].filter(val => val !== null && val !== undefined)) - 8, textY);
     }
     if (this.config.showRightRemark && task.rightRemark) {
       ctx.textAlign = 'left';
-      ctx.fillText(task.rightRemark, pos.x_plan_end + 8, textY);
+      ctx.fillText(task.rightRemark, Math.max(...[pos.x_plan_end, pos.x_actual_end].filter(val => val !== null && val !== undefined)) + 8, textY);
     }
     if (this.config.showCenterRemark && task.centerRemark) {
       const centerX = pos.x_actual_start! + (pos.x_actual_end! - pos.x_actual_start!) / 2;
@@ -793,9 +796,9 @@ export class GanttChart {
   private getTaskTooltipHtml(task: Task): string {
     if (task.type === 'leave') {
       const days = DateUtils.diffDaysInclusive(new Date(task.actualStart!), new Date(task.actualEnd!));
-      return `<div><span style="color: ${task.actualBgColor ? task.actualBgColor : '#f43f5e'};">■</span> <strong>${task.name} (${days}天)</strong><br><span class="ml-4">${task.actualStart} 到 ${task.actualEnd}</span></div>`;
+      return `<div><span style="color: ${firstValidValue(task.actualBgColor, this.config.actualBgColor, '#f43f5e')};">■</span> <strong>${task.name} (${days}天)</strong><br><span class="ml-4">${task.actualStart} 到 ${task.actualEnd}</span></div>`;
     }
-    let html = `<div><span style="color: ${this.getTaskStyles(task).planBorder};">■</span> <strong>${task.name
+    let html = `<div><span style="color: ${firstValidValue(task.actualBgColor, this.config.actualBgColor, this.config.planBorderColor, this.getTaskStyles(task).planBorder)};">■</span> <strong>${task.name
       }</strong><br>`;
     if (this.config.showPlan) {
       const days = DateUtils.diffDaysInclusive(new Date(task.planStart!), new Date(task.planEnd!));
