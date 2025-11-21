@@ -42,14 +42,14 @@ export class GanttChart {
     const scrollEl = document.createElement('div');
     const headerCanvas = document.createElement('canvas');
     const mainCanvas = document.createElement('canvas');
-    container.setAttribute('id', '__gantt-chart-container');
+    // container.setAttribute('id', '__gantt-chart-container');
     container.classList.add('__gantt-chart-container');
 
-    scrollEl.setAttribute('id', '__gantt-scroll-dummy');
+    // scrollEl.setAttribute('id', '__gantt-scroll-dummy');
     scrollEl.classList.add('__gantt-scroll-dummy');
-    headerCanvas.setAttribute('id', '__gantt-header-canvas');
+    // headerCanvas.setAttribute('id', '__gantt-header-canvas');
     headerCanvas.classList.add('__gantt-header-canvas');
-    mainCanvas.setAttribute('id', '__gantt-main-canvas');
+    // mainCanvas.setAttribute('id', '__gantt-main-canvas');
     mainCanvas.classList.add('__gantt-main-canvas');
 
     container.appendChild(scrollEl)
@@ -75,6 +75,8 @@ export class GanttChart {
       showCenterRemark: false,
       showTooltip: true,
       tooltipColor: 'black',
+      offsetTop: 0,
+      offsetLeft: 0,
 
       planBorderColor: '#caeed2',
       actualBgColor: '#78c78f',
@@ -86,7 +88,8 @@ export class GanttChart {
     this.mainCanvas = mainCanvas as HTMLCanvasElement;
     this.scrollDummy = scrollEl!;
     const tooltip = document.createElement('div');
-    tooltip.setAttribute('id', '__gantt-tooltip');
+    // tooltip.setAttribute('id', '__gantt-tooltip');
+    tooltip.classList.add('__gantt-tooltip');
     document.body.appendChild(tooltip);
     this.tooltip = tooltip!;
     this.mainCanvas.style.top = `${this.config.headerHeight}px`;
@@ -141,6 +144,8 @@ export class GanttChart {
   public updateConfig(newConfig: GanttConfig): void {
     Object.assign(this.config, newConfig);
     if (newConfig.viewMode) {
+      this.container.scrollLeft = 0;
+      this.scrollLeft = 0;
       this.updatePixelsPerDay();
       this.calculateFullTimeline();
     }
@@ -798,8 +803,8 @@ export class GanttChart {
       y = e.clientY + 15;
     if (x + tipRect.width > window.innerWidth) x = e.clientX - 15 - tipRect.width;
     if (y + tipRect.height > window.innerHeight) y = e.clientY - 15 - tipRect.height;
-    this.tooltip.style.left = `${x}px`;
-    this.tooltip.style.top = `${y}px`;
+    this.tooltip.style.left = `${x + this.config.offsetLeft}px`;
+    this.tooltip.style.top = `${y + this.config.offsetTop}px`;
   }
 
   private getTaskTooltipHtml(task: Task): string {

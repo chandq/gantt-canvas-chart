@@ -27,6 +27,10 @@
     "type": "git",
     "url": "git+https://github.com/chandq/gantt-canvas-chart.git"
   },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chandq/gantt-canvas-chart/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

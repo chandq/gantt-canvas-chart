@@ -1,3 +1,4 @@
+
 export interface Task {
   id: string;
   name: string;
@@ -37,7 +38,9 @@ export interface GanttConfig {
   showRightRemark?: boolean;
   showCenterRemark?: boolean;
   showTooltip?: boolean;
-  tooltipColor?: 'black' | 'white'
+  tooltipColor?: 'black' | 'white';
+  offsetTop?: number;
+  offsetLeft?: number;
 }
 
 export interface TaskPosition {
