@@ -37,6 +37,7 @@ export interface GanttConfig {
   showRightRemark?: boolean;
   showCenterRemark?: boolean;
   showTooltip?: boolean;
+  tooltipColor?: 'black' | 'white'
 }
 
 export interface TaskPosition {

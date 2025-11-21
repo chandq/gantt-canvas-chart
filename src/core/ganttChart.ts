@@ -74,6 +74,7 @@ export class GanttChart {
       showRightRemark: false,
       showCenterRemark: false,
       showTooltip: true,
+      tooltipColor: 'black',
 
       planBorderColor: '#caeed2',
       actualBgColor: '#78c78f',
@@ -84,7 +85,10 @@ export class GanttChart {
     this.headerCanvas = headerCanvas as HTMLCanvasElement;
     this.mainCanvas = mainCanvas as HTMLCanvasElement;
     this.scrollDummy = scrollEl!;
-    this.tooltip = document.getElementById('__gantt-tooltip')!;
+    const tooltip = document.createElement('div');
+    tooltip.setAttribute('id', '__gantt-tooltip');
+    document.body.appendChild(tooltip);
+    this.tooltip = tooltip!;
     this.mainCanvas.style.top = `${this.config.headerHeight}px`;
 
     this.headerCtx = this.headerCanvas.getContext('2d')!;
@@ -692,11 +696,12 @@ export class GanttChart {
   }
 
   private drawTask(ctx: CanvasRenderingContext2D, task: Task, y: number, pos: TaskPosition): void {
+    const offset = 4;
     const width = pos.x_plan_end - pos.x_plan_start;
-    const taskY = y + this.config.rowHeight * 0.15;
-    const taskHeight = this.config.rowHeight * 0.7;
+    const taskY = y + this.config.rowHeight * 0.15 + offset;
+    const taskHeight = this.config.rowHeight * 0.7 - offset;
     const styles = this.getTaskStyles(task);
-    const textY = y + this.config.rowHeight / 2;
+    const textY = y + this.config.rowHeight / 2 + offset;
 
     if (this.config.showActual && pos.x_actual_start) {
       const aWidth = (pos.x_actual_end ? pos.x_actual_end : pos.x_plan_end)! - pos.x_actual_start;
@@ -784,6 +789,10 @@ export class GanttChart {
 
     this.tooltip.innerHTML = html;
     this.tooltip.style.display = 'block';
+    if (this.config.tooltipColor === 'white') {
+      this.tooltip.style.background = '#fff';
+      this.tooltip.style.color = '#000'
+    }
     const tipRect = this.tooltip.getBoundingClientRect();
     let x = e.clientX + 15,
       y = e.clientY + 15;

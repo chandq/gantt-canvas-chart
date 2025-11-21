@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <div id="__gantt-tooltip"></div>
+    <!-- <div id="__gantt-tooltip"></div> -->
 
     <script type="module">
       import { GanttChart, getDemo1Data, getDemo2Data } from './examples/main';
@@ -114,7 +114,8 @@
             showRightRemark: true,
             showActual: true,
             showPlan: true,
-            rowHeight: 30
+            rowHeight: 30,
+            tooltipColor: 'black'
           });
           demo1Btn.classList.replace('bg-gray-100', 'bg-blue-600');
           demo1Btn.classList.replace('text-gray-700', 'text-white');
@@ -133,7 +134,8 @@
             showCenterRemark: true,
             showActual: true,
             showPlan: true,
-            rowHeight: 60
+            rowHeight: 60,
+            tooltipColor: 'white'
           });
           demo2Btn.classList.replace('bg-gray-100', 'bg-blue-600');
           demo2Btn.classList.replace('text-gray-700', 'text-white');
