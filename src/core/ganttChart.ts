@@ -60,6 +60,7 @@ export class GanttChart {
     container.appendChild(headerCanvas)
     container.appendChild(mainCanvas)
 
+    rootContainer.classList.add('__gantt-chart-wrapper');
     rootContainer.appendChild(container);
 
 
@@ -227,7 +228,7 @@ export class GanttChart {
   }
 
   private updatePixelsPerDay(): void {
-    const viewFactors = { Day: 80, Week: 14, Month: 4.5, Year: 1.5 };
+    const viewFactors = { Day: 80, Week: 20, Month: 15, Year: 6 };
     this.pixelsPerDay = viewFactors[this.config.viewMode];
   }
 
@@ -725,7 +726,7 @@ export class GanttChart {
     const width = pos.x_plan_end - pos.x_plan_start;
     const taskY = y + this.config.rowHeight * 0.15 + offset;
     const taskHeight = this.config.rowHeight * 0.7 - offset;
-    const styles = this.getTaskStyles(task);
+    // const styles = this.getTaskStyles(task);
     const textY = y + this.config.rowHeight / 2 + offset;
 
     if (this.config.showActual && pos.x_actual_start) {
