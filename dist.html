@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>纯Canvas高性能甘特图 (专业连线版)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/src/styles/index.css" />
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="./dist/index.css" />
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -13,7 +13,6 @@
         color: #333;
         overflow: hidden;
       }
-
       .gantt-app-container {
         display: flex;
         flex-direction: column;
@@ -21,7 +20,6 @@
         padding: 1rem;
         gap: 1rem;
       }
-
       .gantt-controls {
         flex-shrink: 0;
       }
@@ -34,61 +32,6 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         border: 1px solid #e0e0e0;
         background: white;
-      }
-
-      /* External table */
-      #external-table {
-        width: 220px;
-        flex-shrink: 0;
-        background: #fff;
-        display: flex;
-        flex-direction: column;
-        border-right: 1px solid #e2e8f0;
-        z-index: 20;
-      }
-
-      #external-table-header {
-        height: 56px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        font-weight: 600;
-        color: #475569;
-        border-bottom: 1px solid #e2e8f0;
-        box-sizing: border-box;
-        background: #f8fafc;
-      }
-
-      #external-table-scroll {
-        flex-grow: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      #external-table-content {
-        position: relative;
-        width: 100%;
-      }
-
-      .external-sidebar-row {
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        background: white;
-        box-sizing: border-box;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 13px;
-        color: #334155;
-        transition: background-color 0.1s;
-      }
-
-      .external-sidebar-row:hover {
-        background-color: #f8fafc;
       }
     </style>
   </head>
@@ -145,14 +88,14 @@
 
       <div class="gantt-main-area">
         <!-- External table -->
-        <div id="external-table">
+        <!-- <div id="external-table">
           <div id="external-table-header">
             <span>任务/资源</span>
           </div>
           <div id="external-table-scroll">
             <div id="external-table-content"></div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Gantt chart -->
         <div id="__gantt-chart-wrapper" class="__gantt-chart-wrapper">
@@ -168,15 +111,15 @@
     <!-- <div id="__gantt-tooltip"></div> -->
 
     <script type="module">
-      import { getDemo1Data, getDemo2Data } from './examples/main.ts';
-      import { GanttChart } from './src/main.ts';
+      import { getDemo1Data, getDemo2Data } from './examples/main.js';
+      import { GanttChart } from './dist/index.es.js';
 
       document.addEventListener('DOMContentLoaded', () => {
         const rootEl = document.getElementById('__gantt-chart-wrapper');
-        const ganttContainer = document.getElementById('gantt-chart-container');
-        const extTableContent = document.getElementById('external-table-content');
-        const extTableScroll = document.getElementById('external-table-scroll');
-        const extTableHeader = document.getElementById('external-table-header');
+        // const ganttContainer = document.getElementById('gantt-chart-container');
+        // const extTableContent = document.getElementById('external-table-content');
+        // const extTableScroll = document.getElementById('external-table-scroll');
+        // const extTableHeader = document.getElementById('external-table-header');
 
         const chart = new GanttChart(rootEl, getDemo1Data(), { showLeftRemark: true, showRightRemark: true });
 
@@ -207,8 +150,8 @@
           demo1Btn.classList.replace('text-gray-700', 'text-white');
           demo2Btn.classList.replace('bg-blue-600', 'bg-gray-100');
           demo2Btn.classList.replace('text-white', 'text-gray-700');
-          extTableHeader.textContent = '项目/任务 (外部)';
-          buildExternalSidebar(data, chart.config);
+          // extTableHeader.textContent = '项目/任务 (外部)';
+          // buildExternalSidebar(data, chart.config);
         }
 
         function loadDemo2() {
@@ -227,8 +170,8 @@
           demo2Btn.classList.replace('text-gray-700', 'text-white');
           demo1Btn.classList.replace('bg-blue-600', 'bg-gray-100');
           demo1Btn.classList.replace('text-white', 'text-gray-700');
-          extTableHeader.textContent = '人员/资源 (外部)';
-          buildExternalSidebar(data, chart.config);
+          // extTableHeader.textContent = '人员/资源 (外部)';
+          // buildExternalSidebar(data, chart.config);
         }
 
         demo1Btn.addEventListener('click', loadDemo1);
