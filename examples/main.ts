@@ -1,7 +1,7 @@
 import { GanttChart } from '../src/core/ganttChart';
 import { getDemo1Data } from './demo1';
 import { getDemo2Data } from './demo2';
-import '../src/styles/gantt.css';
+import '../src/styles/index.css';
 
 export { GanttChart, getDemo1Data, getDemo2Data };
 

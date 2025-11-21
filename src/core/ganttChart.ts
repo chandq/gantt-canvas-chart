@@ -810,7 +810,7 @@ export class GanttChart {
     let html = `<strong>${row.name}</strong> (${DateUtils.format(
       date,
       'yyyy-MM-dd'
-    )})<hr class="my-1 border-gray-500">`;
+    )})<hr class="__gantt_tooltip-divider">`;
     overlappingTasks.forEach(task => (html += this.getTaskTooltipHtml(task)));
 
     this.tooltip.innerHTML = html;
@@ -831,17 +831,17 @@ export class GanttChart {
   private getTaskTooltipHtml(task: Task): string {
     if (task.type === 'leave') {
       const days = DateUtils.diffDaysInclusive(new Date(task.actualStart!), new Date(task.actualEnd!));
-      return `<div><span style="color: ${firstValidValue(task.actualBgColor, this.config.actualBgColor, '#f43f5e')};">■</span> <strong>${task.name} (${days}天)</strong><br><span class="ml-4">${task.actualStart} 到 ${task.actualEnd}</span></div>`;
+      return `<div><span style="color: ${firstValidValue(task.actualBgColor, this.config.actualBgColor, '#f43f5e')};">■</span> <strong>${task.name} (${days}天)</strong><br><span class="__gantt_tooltip-indent">${task.actualStart} 到 ${task.actualEnd}</span></div>`;
     }
     let html = `<div><span style="color: ${firstValidValue(task.actualBgColor, this.config.actualBgColor, this.config.planBorderColor, this.getTaskStyles(task).planBorder)};">■</span> <strong>${task.name
       }</strong><br>`;
     if (this.config.showPlan) {
       const days = DateUtils.diffDaysInclusive(new Date(task.planStart!), new Date(task.planEnd!));
-      html += `<span class="ml-4">计划: ${task.planStart} - ${task.planEnd} (${days}天)</span><br>`;
+      html += `<span class="__gantt_tooltip-indent">计划: ${task.planStart} - ${task.planEnd} (${days}天)</span><br>`;
     }
     if (this.config.showActual && task.actualStart) {
       const days = DateUtils.diffDaysInclusive(new Date(task.actualStart), new Date(task.actualEnd!));
-      html += `<span class="ml-4">实际: ${task.actualStart} - ${task.actualEnd} (${days}天)</span><br>`;
+      html += `<span class="__gantt_tooltip-indent">实际: ${task.actualStart} - ${task.actualEnd} (${days}天)</span><br>`;
     }
     return html + '</div>';
   }
