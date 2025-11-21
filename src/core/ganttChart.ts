@@ -9,6 +9,7 @@ import {
 import { firstValidValue } from './utils';
 
 export class GanttChart {
+  private rootContainer: HTMLElement;
   private container: HTMLElement;
   private data: GanttData;
   private config: Required<GanttConfig>;
@@ -34,10 +35,13 @@ export class GanttChart {
   private totalWidth: number;
   private totalHeight: number;
 
+  private resizeObserver: ResizeObserver | null;
+
   private taskPositions: Map<string, TaskPosition>;
   private taskMap: Map<string, { row: number; task: Task }>;
 
-  constructor(root: HTMLElement, data: GanttData, config: GanttConfig = {}) {
+  constructor(rootContainer: HTMLElement, data: GanttData, config: GanttConfig = {}) {
+
     const container = document.createElement('div');
     const scrollEl = document.createElement('div');
     const headerCanvas = document.createElement('canvas');
@@ -56,10 +60,11 @@ export class GanttChart {
     container.appendChild(headerCanvas)
     container.appendChild(mainCanvas)
 
-    root.appendChild(container);
+    rootContainer.appendChild(container);
 
 
-
+    this.resizeObserver = null;
+    this.rootContainer = rootContainer;
     this.container = container;
     this.data = data;
     this.config = {
@@ -134,7 +139,14 @@ export class GanttChart {
 
   private setupEvents(): void {
     this.container.addEventListener('scroll', this.handleScroll.bind(this));
-    window.addEventListener('resize', this.handleResize.bind(this));
+    this.handleResize = this.handleResize.bind(this);
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(this.handleResize);
+      setTimeout(() => {
+        this.resizeObserver!.observe(this.rootContainer);
+      }, 100);
+    }
+    // window.addEventListener('resize', this.handleResize.bind(this));
     if (this.config.showTooltip) {
       this.mainCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
       this.mainCanvas.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
@@ -159,6 +171,14 @@ export class GanttChart {
     this.calculateFullTimeline();
     this.updateDimensions();
     this.render();
+  }
+
+  public destroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+    this.container.remove();
+    // window.removeEventListener('resize', this.handleResize);
   }
 
   private calculateFullTimeline(): void {
