@@ -26,7 +26,14 @@ export default defineConfig({
       external: [],
       output: {
         globals: {
-          // $ganttCanvas: 'ganttCanvasChart'
+          'gantt-canvas-chart': 'GanttChart'
+        },
+        // Rename the output CSS file
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'index.css';
+          }
+          return assetInfo.name as string;
         }
       }
     },
