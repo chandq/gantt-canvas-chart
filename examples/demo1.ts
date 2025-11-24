@@ -1,4 +1,5 @@
 import type { GanttData } from '../src/core/types';
+import { GanttChart } from '../src/core/ganttChart';
 
 export function getDemo1Data(): GanttData {
   return [
@@ -16,6 +17,22 @@ export function getDemo1Data(): GanttData {
           actualEnd: '2025-11-04',
           leftRemark: '张三',
           rightRemark: '已完成',
+          planOffsetPercent: [0.1, 0.9]
+          // styleClass: 'demo1-task'
+        },
+        {
+          id: 't0L',
+          name: '整体介绍草稿请假',
+
+          // planStart: '2025-11-01 09:00:00',
+          // planEnd: '2025-11-05 05:00:00',
+          actualStart: '2025-11-01',
+          actualEnd: '2025-11-01',
+          actualBgColor: 'red',
+          centerRemark: '请假',
+          // leftRemark: '张三',
+          // rightRemark: '已完成',
+          actualOffsetPercent: [0.5, 0.5],
           // styleClass: 'demo1-task'
         },
         {

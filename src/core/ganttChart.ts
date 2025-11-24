@@ -80,9 +80,11 @@ export class GanttChart {
       showRightRemark: false,
       showCenterRemark: false,
       showTooltip: true,
+      tooltipFormat: null,
       tooltipColor: 'black',
       offsetTop: 0,
       offsetLeft: 0,
+      viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
 
       planBorderColor: '#caeed2',
       actualBgColor: '#78c78f',
@@ -228,8 +230,8 @@ export class GanttChart {
   }
 
   private updatePixelsPerDay(): void {
-    const viewFactors = { Day: 80, Week: 20, Month: 15, Year: 6 };
-    this.pixelsPerDay = viewFactors[this.config.viewMode];
+    // const viewFactors = { Day: 80, Week: 20, Month: 15, Year: 6 };
+    this.pixelsPerDay = this.config.viewFactors[this.config.viewMode];
   }
 
   private dateToX(date: Date): number {
@@ -338,6 +340,8 @@ export class GanttChart {
   }
 
   public render(): void {
+    console.log('render',);
+    console.trace()
     this.updateVirtualRanges();
     this.calculateAllTaskPositions();
     this.renderHeader();
@@ -729,19 +733,29 @@ export class GanttChart {
     // const styles = this.getTaskStyles(task);
     const textY = y + this.config.rowHeight / 2 + offset;
 
+    const [offsetX_actual, percent_actual] = this.config.viewMode === 'Day' && task.actualOffsetPercent ? task.actualOffsetPercent : [0, 1];
+    const [offsetX, percent_plan] = this.config.viewMode === 'Day' && task.planOffsetPercent ? task.planOffsetPercent : [0, 1];
+    // const x_today = this.dateToX(this.today);
     if (this.config.showActual && pos.x_actual_start) {
-      const aWidth = (pos.x_actual_end ? pos.x_actual_end : pos.x_plan_end)! - pos.x_actual_start;
       ctx.fillStyle = task.actualBgColor ? task.actualBgColor : this.config.actualBgColor;
-      ctx.fillRect(pos.x_actual_start, taskY, aWidth, taskHeight);
+      const aWidth = (pos.x_actual_end ? pos.x_actual_end : this.dateToX(this.today))! - pos.x_actual_start;
+      pos.x_actual_start += aWidth * offsetX_actual;
+      pos.x_actual_end && (pos.x_actual_end = pos.x_actual_start + aWidth * percent_actual);
+
+      ctx.fillRect(pos.x_actual_start, taskY, aWidth * percent_actual, taskHeight);
 
     }
 
     if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
       ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : this.config.planBorderColor;
+
+      pos.x_plan_start += width * offsetX;
+      pos.x_plan_end && (pos.x_plan_end = pos.x_plan_start + width * percent_plan);
+
       ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(pos.x_plan_start, taskY);
-      ctx.lineTo(pos.x_plan_start + width, taskY);
+      ctx.lineTo(pos.x_plan_start + width * percent_plan, taskY);
       ctx.stroke();
     }
 
@@ -793,27 +807,31 @@ export class GanttChart {
     if (rowIndex < 0 || rowIndex >= this.data.length) return this.handleMouseLeave();
     const row = this.data[rowIndex];
 
-    const overlappingTasks = row.tasks.filter(task => {
-      const pStart = new Date(task.planStart!),
-        pEnd = DateUtils.addDays(new Date(task.planEnd!), 1);
-      if (date >= pStart && date < pEnd) return true;
-      if (task.actualStart) {
-        const aStart = new Date(task.actualStart),
-          aEnd = DateUtils.addDays(new Date(task.actualEnd!), 1);
-        if (date >= aStart && date < aEnd) return true;
-      }
-      return false;
-    });
+    if (this.config.tooltipFormat) {
+      this.tooltip.innerHTML = this.config.tooltipFormat(row);
+    } else {
+      const overlappingTasks = row.tasks.filter(task => {
+        const pStart = new Date(task.planStart!),
+          pEnd = DateUtils.addDays(new Date(task.planEnd!), 1);
+        if (date >= pStart && date < pEnd) return true;
+        if (task.actualStart) {
+          const aStart = new Date(task.actualStart),
+            aEnd = DateUtils.addDays(new Date(task.actualEnd!), 1);
+          if (date >= aStart && date < aEnd) return true;
+        }
+        return false;
+      });
 
-    if (overlappingTasks.length === 0) return this.handleMouseLeave();
+      if (overlappingTasks.length === 0) return this.handleMouseLeave();
 
-    let html = `<strong>${row.name}</strong> (${DateUtils.format(
-      date,
-      'yyyy-MM-dd'
-    )})<hr class="__gantt_tooltip-divider">`;
-    overlappingTasks.forEach(task => (html += this.getTaskTooltipHtml(task)));
+      let html = `<strong>${row.name}</strong> (${DateUtils.format(
+        date,
+        'yyyy-MM-dd'
+      )})<hr class="__gantt_tooltip-divider">`;
+      overlappingTasks.forEach(task => (html += this.getTaskTooltipHtml(task)));
+      this.tooltip.innerHTML = html;
+    }
 
-    this.tooltip.innerHTML = html;
     this.tooltip.style.display = 'block';
     if (this.config.tooltipColor === 'white') {
       this.tooltip.style.background = '#fff';
@@ -848,5 +866,14 @@ export class GanttChart {
 
   private handleMouseLeave(): void {
     this.tooltip.style.display = 'none';
+  }
+  /**
+   * 计算任务宽度占的百分比（方便绘制精确到具体时间的每日任务）
+   * @param diffMilliseconds 距离目标日期时间的差异毫秒数
+   * @param pixelsPerDay 每日的像素数
+   * @returns
+   */
+  static getTaskWidthPercent(diffMilliseconds: number, pixelsPerDay: number): number {
+    return diffMilliseconds * pixelsPerDay / DateUtils.ONE_DAY_MS;
   }
 }
