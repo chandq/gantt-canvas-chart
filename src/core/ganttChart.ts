@@ -40,6 +40,10 @@ export class GanttChart {
   private taskPositions: Map<string, TaskPosition>;
   private taskMap: Map<string, { row: number; task: Task }>;
 
+  private boundHandleMouseMove: (e: MouseEvent) => void;
+  private boundHandleMouseLeave: (e: MouseEvent) => void;
+  private boundHandleScroll: (e: Event) => void;
+
   constructor(rootContainer: HTMLElement, data: GanttData, config: GanttConfig = {}) {
 
     const container = document.createElement('div');
@@ -123,6 +127,11 @@ export class GanttChart {
     this.taskPositions = new Map();
     this.taskMap = new Map();
 
+    this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+    this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
+    this.boundHandleScroll = this.handleScroll.bind(this);
+
+
     this.init();
   }
 
@@ -142,7 +151,7 @@ export class GanttChart {
   }
 
   private setupEvents(): void {
-    this.container.addEventListener('scroll', this.handleScroll.bind(this));
+    this.container.addEventListener('scroll', this.boundHandleScroll);
     this.handleResize = this.handleResize.bind(this);
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(this.handleResize);
@@ -152,8 +161,8 @@ export class GanttChart {
     }
     // window.addEventListener('resize', this.handleResize.bind(this));
     if (this.config.showTooltip) {
-      this.mainCanvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
-      this.mainCanvas.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
+      this.mainCanvas.addEventListener('mousemove', this.boundHandleMouseMove);
+      this.mainCanvas.addEventListener('mouseleave', this.boundHandleMouseLeave);
     }
   }
 
@@ -181,6 +190,10 @@ export class GanttChart {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
+    this.container.removeEventListener('scroll', this.boundHandleScroll);
+    this.mainCanvas.removeEventListener('mousemove', this.boundHandleMouseMove);
+    this.mainCanvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+
     this.container.remove();
     // window.removeEventListener('resize', this.handleResize);
   }
@@ -341,8 +354,8 @@ export class GanttChart {
   }
 
   public render(): void {
-    console.log('render',);
-    console.trace()
+    // console.log('render',);
+    // console.trace()
     this.updateVirtualRanges();
     this.calculateAllTaskPositions();
     this.renderHeader();
