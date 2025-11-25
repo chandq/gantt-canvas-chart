@@ -82,6 +82,7 @@ export class GanttChart {
       showTooltip: true,
       tooltipFormat: null,
       tooltipColor: 'black',
+      todayColor: '#ff4d4f',
       offsetTop: 0,
       offsetLeft: 0,
       viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
@@ -716,7 +717,7 @@ export class GanttChart {
   private drawToday(ctx: CanvasRenderingContext2D): void {
     const x = this.dateToX(this.today);
     if (x >= this.scrollLeft && x <= this.scrollLeft + this.viewportWidth) {
-      ctx.strokeStyle = '#ff4d4f';
+      ctx.strokeStyle = this.config.todayColor;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(x, this.scrollTop);
@@ -808,7 +809,11 @@ export class GanttChart {
     const row = this.data[rowIndex];
 
     if (this.config.tooltipFormat) {
-      this.tooltip.innerHTML = this.config.tooltipFormat(row, date, this.config);
+      const htmlStr = this.config.tooltipFormat(row, date, this.config);
+      if (!htmlStr) {
+        return this.handleMouseLeave();
+      }
+      this.tooltip.innerHTML = htmlStr;
     } else {
       const overlappingTasks = row.tasks.filter(task => {
         const pStart = new Date(task.planStart!),

@@ -215,6 +215,7 @@
                 }
                 return false;
               });
+              // console.log('row, date, config', row, date, config, overlappingTasks);
               let planHtml = `<div><strong>资源计划分配</strong><br></div>`,
                 actualHtml = `<div><strong>资源实际分配</strong><br></div>`;
               let planTaskIndex = 0,
@@ -226,11 +227,14 @@
                     task._data?.investRatio
                   }%)</span><br>`;
                 } else if (task.actualStart) {
-                  actualHtml += `<span class="__gantt_tooltip-indent">任务${++planTaskIndex}: ${task.name} (${
+                  actualHtml += `<span class="__gantt_tooltip-indent">任务${++actualTaskIndex}: ${task.name} (${
                     task._data?.realInvestRatio
                   }%)</span><br>`;
                 }
               });
+              if (!planTaskIndex && !actualTaskIndex) {
+                return false;
+              }
 
               let html = `<strong>${row.name}</strong> (${DateUtils.format(
                 date,
@@ -259,7 +263,8 @@
             showActual: true,
             showPlan: true,
             rowHeight: 60,
-            tooltipColor: 'white'
+            tooltipColor: 'white',
+            tooltipFormat: null
           });
           demo2Btn.classList.replace('bg-gray-100', 'bg-blue-600');
           demo2Btn.classList.replace('text-gray-700', 'text-white');

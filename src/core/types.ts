@@ -43,6 +43,7 @@ export interface GanttConfig {
   showCenterRemark?: boolean;
   showTooltip?: boolean;
   tooltipColor?: 'black' | 'white';
+  todayColor?: string;
   offsetTop?: number;
   offsetLeft?: number;
   viewFactors?: { Day: number, Week: number, Month: number, Year: number },

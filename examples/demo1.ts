@@ -11,8 +11,8 @@ export function getDemo1Data(): GanttData {
           id: 't000',
           name: '项目需求背景编写',
 
-          planStart: '2025-10-01 09:00:00',
-          planEnd: '2025-10-01 15:00:00',
+          planStart: '2025-10-01',
+          planEnd: '2025-10-01',
           actualStart: '2025-10-01',
           actualEnd: '2025-10-01',
           leftRemark: '刘玲',
