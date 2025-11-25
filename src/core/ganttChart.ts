@@ -808,7 +808,7 @@ export class GanttChart {
     const row = this.data[rowIndex];
 
     if (this.config.tooltipFormat) {
-      this.tooltip.innerHTML = this.config.tooltipFormat(row);
+      this.tooltip.innerHTML = this.config.tooltipFormat(row, date, this.config);
     } else {
       const overlappingTasks = row.tasks.filter(task => {
         const pStart = new Date(task.planStart!),

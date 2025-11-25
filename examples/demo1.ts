@@ -8,6 +8,19 @@ export function getDemo1Data(): GanttData {
       name: '项目总览',
       tasks: [
         {
+          id: 't000',
+          name: '项目需求背景编写',
+
+          planStart: '2025-10-01 09:00:00',
+          planEnd: '2025-10-01 15:00:00',
+          actualStart: '2025-10-01',
+          actualEnd: '2025-10-01',
+          leftRemark: '刘玲',
+          rightRemark: '待开始',
+          // planOffsetPercent: [0.1, 0.9]
+          // styleClass: 'demo1-task'
+        },
+        {
           id: 't0',
           name: '整体介绍草稿',
 
@@ -28,11 +41,11 @@ export function getDemo1Data(): GanttData {
           // planEnd: '2025-11-05 05:00:00',
           actualStart: '2025-11-01',
           actualEnd: '2025-11-01',
-          actualBgColor: 'red',
+          actualBgColor: '#FFEDB0',
           centerRemark: '请假',
           // leftRemark: '张三',
           // rightRemark: '已完成',
-          actualOffsetPercent: [0.5, 0.5],
+          actualOffsetPercent: [0.2, 0.5],
           // styleClass: 'demo1-task'
         },
         {

@@ -14,6 +14,7 @@ export interface Task {
   styleClass?: string;
   planBorderColor?: string;
   actualBgColor?: string;
+  _data?: any;  // 存放自定义的数据
   planOffsetPercent?: [number, number]; // 根据[起始坐标偏移百分比，显示进度百分比]绘制按日展示时任务进度（计划）
   actualOffsetPercent?: [number, number]; // 根据[起始坐标偏移百分比，显示进度百分比]绘制按日展示时任务进度（实际）
 
@@ -45,7 +46,7 @@ export interface GanttConfig {
   offsetTop?: number;
   offsetLeft?: number;
   viewFactors?: { Day: number, Week: number, Month: number, Year: number },
-  tooltipFormat?: null | ((task: Row) => string);
+  tooltipFormat?: null | ((task: Row, date: Date, config: GanttConfig) => string);
 }
 
 export interface TaskPosition {
