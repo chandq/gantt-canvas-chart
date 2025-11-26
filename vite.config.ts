@@ -43,5 +43,15 @@ export default defineConfig({
   plugins: [banner({
     outDir: resolve(__dirname, './dist'),
     content: bannerString,
-  }), dts()]
+  }), dts({
+    // Generate type declarations for all files
+    rollupTypes: true,
+    tsconfigPath: './tsconfig.json',
+
+    // Output directory for type definitions
+    outDir: 'dist',
+    // Insert declaration files per module
+    staticImport: true,
+
+  })]
 });

@@ -1,5 +1,5 @@
 import { DateUtils } from './dateUtils';
-import {
+import type {
   GanttData,
   GanttConfig,
   TaskPosition,

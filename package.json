@@ -10,6 +10,7 @@
   "jsdelivr": "dist/index.umd.js",
   "exports": {
     ".": {
+      "types": "./dist/types/main.d.ts",
       "import": "./dist/index.es.js",
       "require": "./dist/index.umd.cjs"
     },
@@ -38,9 +39,9 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "typescript": "^5.0.0",
+    "typescript": "~5.8.0",
     "vite": "^7.2.2",
     "vite-plugin-banner": "^0.8.1",
-    "vite-plugin-dts": "^3.0.0"
+    "vite-plugin-dts": "^4.5.4"
   }
 }
