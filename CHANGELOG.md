@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/chandq/gantt-canvas-chart/compare/v1.0.1...v1.0.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* improve default task color ([3763bbc](https://github.com/chandq/gantt-canvas-chart/commit/3763bbc58523a1410badf0f0c0972fcf4b716d92))
+* optimize font style for cross-platform ([59df58a](https://github.com/chandq/gantt-canvas-chart/commit/59df58ac6ff1fd3a16d7386b164e076cf2a96125))
+
 ### [1.0.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.0.1-alpha.0...v1.0.1) (2025-11-26)
 
 ### 1.0.1-alpha.0 (2025-11-25)

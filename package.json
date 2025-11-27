@@ -1,6 +1,6 @@
 {
   "name": "gantt-canvas-chart",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "High performance Gantt chart component based on Canvas, can be applied to any framework",
   "type": "module",
   "main": "dist/index.es.js",
