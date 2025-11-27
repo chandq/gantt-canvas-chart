@@ -91,8 +91,8 @@ export class GanttChart {
       offsetLeft: 0,
       viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
 
-      planBorderColor: '#caeed2',
-      actualBgColor: '#78c78f',
+      planBorderColor: '#C1EFCF',
+      actualBgColor: '#5AC989',
       ...config
     };
 
