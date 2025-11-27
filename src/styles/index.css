@@ -4,6 +4,7 @@
   overflow: hidden;
   position: relative;
   background: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .__gantt-chart-container {
@@ -12,6 +13,7 @@
   position: relative;
   background: #ffffff;
   height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .__gantt-scroll-dummy {
@@ -31,6 +33,7 @@
   z-index: 10;
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
+  text-rendering: optimizeSpeed;
 }
 
 .__gantt-main-canvas {
@@ -38,6 +41,26 @@
   top: 56px; /* Corresponds to header height */
   left: 0;
   z-index: 1;
+  text-rendering: optimizeSpeed;
+}
+
+/* Add to your CSS file or create a stylesheet */
+.__gantt-chart-container {
+  transform: translateZ(0); /* Force hardware acceleration */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.__gantt-header-canvas,
+.__gantt-main-canvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  shape-rendering: crispEdges;
+  /* Add font rendering optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
 }
 
 /* Tooltip */

@@ -374,6 +374,10 @@ export class GanttChart {
     ctx.fillRect(this.scrollLeft, 0, this.viewportWidth, h);
 
     ctx.textBaseline = 'middle';
+    // Use better font rendering settings
+    ctx.textRendering = 'optimizeLegibility';
+    // ctx.webkitFontSmoothing = 'antialiased';
+    // ctx.mozOsxFontSmoothing = 'grayscale';
 
     let currentDate = new Date(this.visibleDateRange.start);
     currentDate = this.getIterationStartDate(currentDate);
@@ -449,14 +453,16 @@ export class GanttChart {
 
       if (upperText !== lastUpperText) {
         ctx.fillStyle = '#333';
-        ctx.font = 'bold 13px sans-serif';
+        ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+        ctx.textRendering = 'optimizeLegibility';
         ctx.textAlign = 'left';
         ctx.fillText(upperText, x + 5, h * 0.35);
         lastUpperText = upperText;
       }
 
-      ctx.fillStyle = '#666';
-      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#000412';
+      ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
       ctx.textAlign = 'center';
 
       ctx.fillText(lowerText, x + unitWidth / 2, h * 0.7);
@@ -614,7 +620,9 @@ export class GanttChart {
 
   private drawAllTasks(ctx: CanvasRenderingContext2D): void {
     ctx.textBaseline = 'middle';
-    ctx.font = '12px Arial';
+    ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+    ctx.textRendering = 'optimizeSpeed';
+    ctx.imageSmoothingEnabled = false;
 
     for (let i = 0; i < this.data.length; i++) {
       const row = this.data[i];
@@ -640,7 +648,7 @@ export class GanttChart {
   }
 
   private drawGrid(ctx: CanvasRenderingContext2D, startDate: Date, endDate: Date): void {
-    ctx.strokeStyle = '#f0f0f0';
+    ctx.strokeStyle = '#e6e6e6';
     ctx.lineWidth = 1;
     ctx.beginPath();
 
@@ -773,7 +781,7 @@ export class GanttChart {
       ctx.stroke();
     }
 
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = '#000';
     if (this.config.showLeftRemark && task.leftRemark) {
       ctx.textAlign = 'right';
       ctx.fillText(task.leftRemark, Math.min(...[pos.x_plan_start, pos.x_actual_start].filter(val => val !== null && val !== undefined)) - 8, textY);
