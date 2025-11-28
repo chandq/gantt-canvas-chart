@@ -15,7 +15,7 @@ const bannerString =
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/main.ts'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: 'GanttChart',
       // fileName: 'gantt-chart',
       // 文件名，不用写后缀名

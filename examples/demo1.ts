@@ -28,7 +28,7 @@ export function getDemo1Data(): GanttData {
           planEnd: '2025-11-05 05:00:00',
           actualStart: '2025-11-01',
           actualEnd: '2025-11-04',
-          leftRemark: '张三',
+          leftRemark: '龙扥塞缝森我累得',
           rightRemark: '已完成',
           planOffsetPercent: [0.1, 0.9]
           // styleClass: 'demo1-task'
@@ -57,7 +57,7 @@ export function getDemo1Data(): GanttData {
           actualStart: '2025-11-11',
           actualEnd: '2025-11-14',
           leftRemark: '张三',
-          rightRemark: '已完成',
+          rightRemark: '已完成-赛复赛废了龙洞扥塞缝赛飞舞的',
           planBorderColor: '#caeed2',
           actualBgColor: '#78c78f',
           // styleClass: 'demo1-task'

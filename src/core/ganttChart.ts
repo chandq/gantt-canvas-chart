@@ -178,12 +178,16 @@ export class GanttChart {
     this.render();
   }
 
-  public setData(newData: GanttData): void {
+  public setData(newData: GanttData, newConfig?: GanttConfig): void {
     this.data = newData;
     this.buildTaskMap();
-    this.calculateFullTimeline();
-    this.updateDimensions();
-    this.render();
+    if (newConfig) {
+      this.updateConfig(newConfig);
+    } else {
+      this.calculateFullTimeline();
+      this.updateDimensions();
+      this.render();
+    }
   }
 
   public destroy(): void {
