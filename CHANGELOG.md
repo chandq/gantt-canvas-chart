@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.0.2...v1.1.0) (2025-12-02)
+
+
+### Features
+
+* add scrollToStartDate method ([2430ba8](https://github.com/chandq/gantt-canvas-chart/commit/2430ba8678364866d4f12d2f9e69e5a6677653c6))
+
+
+### Bug Fixes
+
+* avoid render repeat when update data and config at same time ([fdcd9aa](https://github.com/chandq/gantt-canvas-chart/commit/fdcd9aacca7f490d4419079fdd3b8dd8cfb4919d))
+* ensure HiDPI display ([6b47c62](https://github.com/chandq/gantt-canvas-chart/commit/6b47c626efa6f79339eda7ae6dd2f2b401b2f01b))
+
 ### [1.0.2](https://github.com/chandq/gantt-canvas-chart/compare/v1.0.1...v1.0.2) (2025-11-27)
 
 
