@@ -25,7 +25,7 @@ export class GanttChart {
   private timelineStart: Date;
   private timelineEnd: Date;
   private minDate: Date | null;
-  private maxDate: Date | null;
+  // private maxDate: Date | null;
   private pixelsPerDay: number;
   private scrollLeft: number;
   private scrollTop: number;
@@ -115,7 +115,7 @@ export class GanttChart {
     this.timelineStart = new Date();
     this.timelineEnd = new Date();
     this.minDate = null;
-    this.maxDate = null;
+    // this.maxDate = null;
     this.pixelsPerDay = 40;
     this.scrollLeft = 0;
     this.scrollTop = 0;
@@ -228,7 +228,7 @@ export class GanttChart {
       });
     }
     this.minDate = minDate;
-    this.maxDate = maxDate;
+    // this.maxDate = maxDate;
     // Add buffer
     minDate = DateUtils.addDays(minDate, -7);
     maxDate = DateUtils.addDays(maxDate, 14);
