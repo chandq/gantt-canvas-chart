@@ -24,6 +24,8 @@ export class GanttChart {
 
   private timelineStart: Date;
   private timelineEnd: Date;
+  private minDate: Date | null;
+  private maxDate: Date | null;
   private pixelsPerDay: number;
   private scrollLeft: number;
   private scrollTop: number;
@@ -112,6 +114,8 @@ export class GanttChart {
 
     this.timelineStart = new Date();
     this.timelineEnd = new Date();
+    this.minDate = null;
+    this.maxDate = null;
     this.pixelsPerDay = 40;
     this.scrollLeft = 0;
     this.scrollTop = 0;
@@ -130,6 +134,7 @@ export class GanttChart {
     this.boundHandleMouseMove = this.handleMouseMove.bind(this);
     this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
     this.boundHandleScroll = this.handleScroll.bind(this);
+    this.scrollToStartDate = this.scrollToStartDate.bind(this);
 
 
     this.init();
@@ -222,6 +227,8 @@ export class GanttChart {
         }
       });
     }
+    this.minDate = minDate;
+    this.maxDate = maxDate;
     // Add buffer
     minDate = DateUtils.addDays(minDate, -7);
     maxDate = DateUtils.addDays(maxDate, 14);
@@ -321,6 +328,7 @@ export class GanttChart {
       const row = this.data[i];
       const y = i * this.config.rowHeight;
       row.tasks.forEach(task => {
+
         const x_plan_start = this.dateToX(new Date(task.planStart!));
         const x_plan_end = this.dateToX(DateUtils.addDays(new Date(task.planEnd!), 1));
         let x_actual_start: number | null = null,
@@ -768,7 +776,7 @@ export class GanttChart {
       pos.x_actual_start += aWidth * offsetX_actual;
       pos.x_actual_end && (pos.x_actual_end = pos.x_actual_start + aWidth * percent_actual);
 
-      ctx.fillRect(pos.x_actual_start, taskY, aWidth * percent_actual, taskHeight);
+      ctx.fillRect(pos.x_actual_start, taskY + 2, aWidth * percent_actual, taskHeight - 2);
 
     }
 
@@ -906,4 +914,19 @@ export class GanttChart {
   static getTaskWidthPercent(diffMilliseconds: number, pixelsPerDay: number): number {
     return diffMilliseconds * pixelsPerDay / DateUtils.ONE_DAY_MS;
   }
+
+  /**
+   * scroll to specified date position, default to minDate
+   *
+   * @param date
+   */
+  scrollToStartDate(date?: Date): void {
+    const startDate = date ? date : this.minDate;
+    if (startDate) {
+      const xPosition = this.dateToX(startDate);
+      this.container.scrollTo({ left: xPosition - 80, });
+    }
+  }
+
+
 }
