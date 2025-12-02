@@ -273,8 +273,8 @@ export class GanttChart {
 
     this.mainCanvas.style.top = `${this.config.headerHeight}px`;
 
-    this.setupCanvas(this.headerCanvas, this.viewportWidth, this.config.headerHeight);
-    this.setupCanvas(this.mainCanvas, this.viewportWidth, this.viewportHeight - this.config.headerHeight);
+    this.headerCtx = this.setupCanvas(this.headerCanvas, this.viewportWidth, this.config.headerHeight);
+    this.mainCtx = this.setupCanvas(this.mainCanvas, this.viewportWidth, this.viewportHeight - this.config.headerHeight);
 
     this.updateDimensions();
     this.render();
@@ -313,13 +313,14 @@ export class GanttChart {
     this.scrollDummy.style.height = `${this.totalHeight}px`;
   }
 
-  private setupCanvas(canvas: HTMLCanvasElement, width: number, height: number): void {
+  private setupCanvas(canvas: HTMLCanvasElement, width: number, height: number): CanvasRenderingContext2D {
     canvas.width = width * this.devicePixelRatio;
     canvas.height = height * this.devicePixelRatio;
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     const ctx = canvas.getContext('2d')!;
     ctx.scale(this.devicePixelRatio, this.devicePixelRatio);
+    return ctx
   }
 
   private calculateAllTaskPositions(): void {
@@ -465,7 +466,7 @@ export class GanttChart {
 
       if (upperText !== lastUpperText) {
         ctx.fillStyle = '#333';
-        ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+        ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
         ctx.textRendering = 'optimizeLegibility';
         ctx.textAlign = 'left';
         ctx.fillText(upperText, x + 5, h * 0.35);
@@ -473,11 +474,11 @@ export class GanttChart {
       }
 
       ctx.fillStyle = '#000412';
-      ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
       ctx.textAlign = 'center';
 
-      ctx.fillText(lowerText, x + unitWidth / 2, h * 0.7);
+      ctx.fillText(lowerText, Math.round(x + unitWidth / 2), Math.round(h * 0.7));
 
       ctx.beginPath();
       ctx.moveTo(x, h * 0.5);
@@ -776,7 +777,7 @@ export class GanttChart {
       pos.x_actual_start += aWidth * offsetX_actual;
       pos.x_actual_end && (pos.x_actual_end = pos.x_actual_start + aWidth * percent_actual);
 
-      ctx.fillRect(pos.x_actual_start, taskY + 2, aWidth * percent_actual, taskHeight - 2);
+      ctx.fillRect(Math.round(pos.x_actual_start), Math.round(taskY + 2), Math.round(aWidth * percent_actual), Math.round(taskHeight - 2));
 
     }
 
@@ -796,17 +797,17 @@ export class GanttChart {
     ctx.fillStyle = '#000';
     if (this.config.showLeftRemark && task.leftRemark) {
       ctx.textAlign = 'right';
-      ctx.fillText(task.leftRemark, Math.min(...[pos.x_plan_start, pos.x_actual_start].filter(val => val !== null && val !== undefined)) - 8, textY);
+      ctx.fillText(task.leftRemark, Math.round(Math.min(...[pos.x_plan_start, pos.x_actual_start].filter(val => val !== null && val !== undefined)) - 8), Math.round(textY));
     }
     if (this.config.showRightRemark && task.rightRemark) {
       ctx.textAlign = 'left';
-      ctx.fillText(task.rightRemark, Math.max(...[pos.x_plan_end, pos.x_actual_end].filter(val => val !== null && val !== undefined)) + 8, textY);
+      ctx.fillText(task.rightRemark, Math.round(Math.max(...[pos.x_plan_end, pos.x_actual_end].filter(val => val !== null && val !== undefined)) + 8), Math.round(textY));
     }
     if (this.config.showCenterRemark && task.centerRemark) {
       const centerX = pos.x_actual_start! + (pos.x_actual_end! - pos.x_actual_start!) / 2;
 
       ctx.textAlign = 'center';
-      ctx.fillText(task.centerRemark, centerX!, textY, pos.x_actual_end! - pos.x_actual_start!);
+      ctx.fillText(task.centerRemark, Math.round(centerX!), Math.round(textY), Math.round(pos.x_actual_end! - pos.x_actual_start!));
     }
 
   }
