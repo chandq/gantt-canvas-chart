@@ -10,7 +10,7 @@ import { firstValidValue } from './utils';
 
 export class GanttChart {
   private rootContainer: HTMLElement;
-  private container: HTMLElement;
+  public container: HTMLElement;
   private data: GanttData;
   private config: Required<GanttConfig>;
 
@@ -24,8 +24,8 @@ export class GanttChart {
 
   private timelineStart: Date;
   private timelineEnd: Date;
-  private minDate: Date | null;
-  // private maxDate: Date | null;
+  public minDate: Date | null;
+  public maxDate: Date | null;
   private pixelsPerDay: number;
   private scrollLeft: number;
   private scrollTop: number;
@@ -115,7 +115,7 @@ export class GanttChart {
     this.timelineStart = new Date();
     this.timelineEnd = new Date();
     this.minDate = null;
-    // this.maxDate = null;
+    this.maxDate = null;
     this.pixelsPerDay = 40;
     this.scrollLeft = 0;
     this.scrollTop = 0;
@@ -208,11 +208,13 @@ export class GanttChart {
   }
 
   private calculateFullTimeline(): void {
+    const currentYear = new Date().getFullYear()
+
     let minDate = new Date(9999, 0, 1);
     let maxDate = new Date(1000, 0, 1);
     if (this.data.length === 0) {
       minDate = new Date();
-      maxDate = DateUtils.addDays(new Date(), 30);
+      maxDate = DateUtils.addDays(new Date(), 60);
     } else {
       this.taskMap.forEach(({ task }) => {
         const pStart = new Date(task.planStart!);
@@ -228,10 +230,12 @@ export class GanttChart {
       });
     }
     this.minDate = minDate;
-    // this.maxDate = maxDate;
+    this.maxDate = maxDate;
+    const minYear = minDate.getFullYear();
+    const maxYear = maxDate.getFullYear();
     // Add buffer
-    minDate = DateUtils.addDays(minDate, -7);
-    maxDate = DateUtils.addDays(maxDate, 14);
+    minDate = DateUtils.addDays(minYear === 9999 ? new Date(currentYear, 0, 1) : minDate, -7);
+    maxDate = DateUtils.addDays(maxYear === 1000 ? new Date(currentYear + 1, 0, 1) : maxDate, 14);
 
     switch (this.config.viewMode) {
       case 'Year':
@@ -752,7 +756,7 @@ export class GanttChart {
     const x = this.dateToX(this.today);
     if (x >= this.scrollLeft && x <= this.scrollLeft + this.viewportWidth) {
       ctx.strokeStyle = this.config.todayColor;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, this.scrollTop);
       ctx.lineTo(x, this.scrollTop + this.viewportHeight);
