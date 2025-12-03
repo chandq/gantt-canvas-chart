@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.1.1...v1.2.0) (2025-12-03)
+
+
+### Features
+
+* declare public field ([359880c](https://github.com/chandq/gantt-canvas-chart/commit/359880cd7ca3a08b0cbc5b2fc7b4e84c5263a912))
+
 ### [1.1.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.1.0...v1.1.1) (2025-12-03)
 
 ## [1.1.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.0.2...v1.1.0) (2025-12-02)
