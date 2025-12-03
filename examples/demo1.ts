@@ -1,5 +1,8 @@
 import type { GanttData } from '../src/core/types';
 import { GanttChart } from '../src/core/ganttChart';
+import { DateUtils } from '../src/core/dateUtils';
+
+const currentDay = new Date();
 
 export function getDemo1Data(): GanttData {
   return [
@@ -131,7 +134,7 @@ export function getDemo1Data(): GanttData {
           id: 't5',
           name: '后端开发',
           planStart: '2025-11-09',
-          planEnd: '2025-11-16',
+          planEnd: '2025-11-09',
           actualStart: '2025-11-09',
           actualEnd: '2025-11-15',
           // dependencies: ['t4'],
@@ -151,7 +154,7 @@ export function getDemo1Data(): GanttData {
           name: '集成测试',
           planStart: '2025-11-21',
           planEnd: '2025-11-28',
-          actualStart: '2025-11-22',
+          actualStart: '2025-12-22',
           dependencies: ['t3', 't5'],
           leftRemark: '测试组',
           rightRemark: '进行中',
@@ -160,7 +163,7 @@ export function getDemo1Data(): GanttData {
         }
       ]
     },
-    ...Array.from({ length: 500 }, (_, i) => ({
+    ...Array.from({ length: 100 }, (_, i) => ({
       id: `proj_virt_${i}`,
       name: `虚拟项目 ${i + 1}`,
       tasks: [
@@ -176,9 +179,19 @@ export function getDemo1Data(): GanttData {
           name: `任务 ${i}.2`,
           planStart: '2025-12-12',
           planEnd: '2025-12-20',
-          dependencies: [i === 0 ? 't6' : `vt_${i - 1}_2`],
+          // dependencies: [i === 0 ? 't6' : `vt_${i - 1}_2`],
           styleClass: 'demo1-task'
-        }
+        },
+        ...Array.from({ length: 5 }, (_, j) => ({
+          id: `vt_${i}_${j + 3}`,
+          name: `任务 ${i}.${j + 3}`,
+          planStart: DateUtils.format(DateUtils.addDays(currentDay, j + 5), 'yyyy-MM-dd'),
+          planEnd: DateUtils.format(DateUtils.addDays(currentDay, j + 8), 'yyyy-MM-dd'),
+          actualStart: DateUtils.format(DateUtils.addDays(currentDay, j + 5), 'yyyy-MM-dd'),
+          actualEnd: DateUtils.format(DateUtils.addDays(currentDay, j + 8), 'yyyy-MM-dd'),
+          // dependencies: [`vt_${i}_${j + 2}`],
+          styleClass: 'demo1-task'
+        }))
       ]
     }))
   ]
