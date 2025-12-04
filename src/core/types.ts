@@ -3,7 +3,7 @@ export interface Task {
   id: string;
   name: string;
   type?: 'task' | 'leave';
-  planStart?: string;
+  planStart?: string; // Plan start date, date separated by '/'
   planEnd?: string;
   actualStart?: string;
   actualEnd?: string;

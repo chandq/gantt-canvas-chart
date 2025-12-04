@@ -22,13 +22,13 @@ export class DateUtils {
     return format;
   }
 
-  static addDays(date: Date, days: number): Date {
+  static addDays(date: Date | string, days: number): Date {
     const r = new Date(date);
     r.setDate(r.getDate() + days);
     return r;
   }
 
-  static addMonths(date: Date, months: number): Date {
+  static addMonths(date: Date | string, months: number): Date {
     const d = new Date(date);
     d.setDate(1);
     d.setMonth(d.getMonth() + months);

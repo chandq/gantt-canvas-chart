@@ -30,7 +30,7 @@ export class GanttChart {
   private scrollLeft: number;
   private scrollTop: number;
   private visibleDateRange: VisibleDateRange;
-  private today: Date;
+  public today: Date;
   private devicePixelRatio: number;
   private viewportWidth: number;
   private viewportHeight: number;
@@ -156,7 +156,7 @@ export class GanttChart {
   }
 
   private setupEvents(): void {
-    this.container.addEventListener('scroll', this.boundHandleScroll);
+    this.container.addEventListener('scroll', this.boundHandleScroll, { passive: true });
     this.handleResize = this.handleResize.bind(this);
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(this.handleResize);
@@ -177,7 +177,7 @@ export class GanttChart {
       this.container.scrollLeft = 0;
       this.scrollLeft = 0;
       this.updatePixelsPerDay();
-      this.calculateFullTimeline();
+      // this.calculateFullTimeline();
     }
     this.updateDimensions();
     this.render();
@@ -208,7 +208,7 @@ export class GanttChart {
   }
 
   private calculateFullTimeline(): void {
-    const currentYear = new Date().getFullYear()
+    const currentYear = this.today.getFullYear()
 
     let minDate = new Date(9999, 0, 1);
     let maxDate = new Date(1000, 0, 1);
@@ -311,10 +311,16 @@ export class GanttChart {
 
   private updateDimensions(): void {
     const totalDays = DateUtils.diffDays(this.timelineStart, this.timelineEnd) + 1;
-    this.totalWidth = totalDays * this.pixelsPerDay;
-    this.totalHeight = this.data.length * this.config.rowHeight + this.config.headerHeight;
-    this.scrollDummy.style.width = `${this.totalWidth}px`;
-    this.scrollDummy.style.height = `${this.totalHeight}px`;
+    const newTotalWidth = totalDays * this.pixelsPerDay;
+    const newTotalHeight = this.data.length * this.config.rowHeight + this.config.headerHeight;
+
+    // Only update if changed
+    if (this.totalWidth !== newTotalWidth || this.totalHeight !== newTotalHeight) {
+      this.totalWidth = newTotalWidth;
+      this.totalHeight = newTotalHeight;
+      this.scrollDummy.style.width = `${this.totalWidth}px`;
+      this.scrollDummy.style.height = `${this.totalHeight}px`;
+    }
   }
 
   private setupCanvas(canvas: HTMLCanvasElement, width: number, height: number): CanvasRenderingContext2D {
@@ -335,14 +341,14 @@ export class GanttChart {
       row.tasks.forEach(task => {
 
         const x_plan_start = this.dateToX(new Date(task.planStart!));
-        const x_plan_end = this.dateToX(DateUtils.addDays(new Date(task.planEnd!), 1));
+        const x_plan_end = this.dateToX(DateUtils.addDays(task.planEnd!, 1));
         let x_actual_start: number | null = null,
           x_actual_end: number | null = null;
         if (task.actualStart) {
           x_actual_start = this.dateToX(new Date(task.actualStart));
         }
         if (task.actualEnd) {
-          x_actual_end = this.dateToX(DateUtils.addDays(new Date(task.actualEnd), 1));
+          x_actual_end = this.dateToX(DateUtils.addDays(task.actualEnd, 1));
         }
         this.taskPositions.set(task.id, {
           x_plan_start,
@@ -793,8 +799,8 @@ export class GanttChart {
 
       ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.moveTo(pos.x_plan_start, taskY);
-      ctx.lineTo(pos.x_plan_start + width * percent_plan, taskY);
+      ctx.moveTo(pos.x_plan_start + 2, taskY);
+      ctx.lineTo(pos.x_plan_start + width * percent_plan - 2, taskY);
       ctx.stroke();
     }
 
@@ -854,13 +860,13 @@ export class GanttChart {
       this.tooltip.innerHTML = htmlStr;
     } else {
       const overlappingTasks = row.tasks.filter(task => {
-        const pStart = new Date(task.planStart!),
-          pEnd = DateUtils.addDays(new Date(task.planEnd!), 1);
-        if (date >= pStart && date < pEnd) return true;
+        const pStart = new Date(task.planStart!).setHours(0, 0, 0, 0),
+          pEnd = DateUtils.addDays(task.planEnd!, 1);
+        if ((date as any) >= pStart && date < pEnd) return true;
         if (task.actualStart) {
-          const aStart = new Date(task.actualStart),
-            aEnd = DateUtils.addDays(new Date(task.actualEnd!), 1);
-          if (date >= aStart && date < aEnd) return true;
+          const aStart = new Date(task.actualStart).setHours(0, 0, 0, 0),
+            aEnd = DateUtils.addDays(task.actualEnd!, 1);
+          if (date as any >= aStart && date < aEnd) return true;
         }
         return false;
       });

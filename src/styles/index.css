@@ -74,7 +74,7 @@
   font-size: 13px;
   line-height: 1.6;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 2147483640;
   max-width: 300px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
