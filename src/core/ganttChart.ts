@@ -36,6 +36,7 @@ export class GanttChart {
   private viewportHeight: number;
   private totalWidth: number;
   private totalHeight: number;
+  private scrolling: boolean;
 
   private resizeObserver: ResizeObserver | null;
 
@@ -74,6 +75,7 @@ export class GanttChart {
     this.rootContainer = rootContainer;
     this.container = container;
     this.data = data;
+    this.scrolling = false;
     this.config = {
       viewMode: 'Month',
       rowHeight: 48,
@@ -294,7 +296,11 @@ export class GanttChart {
     });
     this.container.dispatchEvent(event);
 
-    requestAnimationFrame(() => this.render());
+    requestAnimationFrame(() => {
+      this.scrolling = true;
+      this.render()
+      this.scrolling = false;
+    });
   }
 
   public setScrollTop(scrollTop: number): void {
@@ -377,12 +383,15 @@ export class GanttChart {
   }
 
   public render(): void {
+    // const timeStart = performance.now();
     // console.log('render',);
     // console.trace()
     this.updateVirtualRanges();
     this.calculateAllTaskPositions();
     this.renderHeader();
     this.renderMain();
+    // const timeEnd = performance.now();
+    // console.log(`render time: ${timeEnd - timeStart}ms`);
   }
 
   private renderHeader(): void {
@@ -841,6 +850,9 @@ export class GanttChart {
   }
 
   private handleMouseMove(e: MouseEvent): void {
+    if (this.scrolling) {
+      return
+    }
     const rect = this.mainCanvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
