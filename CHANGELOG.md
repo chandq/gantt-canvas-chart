@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.2.0...v1.3.0) (2025-12-05)
+
+
+### Features
+
+* add load More functional with scroll to left/right/bottom ([23cd3a8](https://github.com/chandq/gantt-canvas-chart/commit/23cd3a8b2ddab18e18bf49ac1e0b6a7b254d8683))
+
+
+### Bug Fixes
+
+* always show year/month when scroll ([8659c58](https://github.com/chandq/gantt-canvas-chart/commit/8659c588667e25b0b7434ac19688df70d556077b))
+* pass correct minDate arguments by loadMoreData ([7e146ad](https://github.com/chandq/gantt-canvas-chart/commit/7e146ad9ab8181d4dea30b34c26071d9237197a0))
+
 ## [1.2.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.1.1...v1.2.0) (2025-12-03)
 
 
