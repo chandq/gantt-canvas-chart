@@ -99,6 +99,7 @@ export class GanttChart {
 
       planBorderColor: '#C1EFCF',
       actualBgColor: '#5AC989',
+      headerBgColor: '#f9f9f9',
       ...config
     };
 
@@ -168,6 +169,7 @@ export class GanttChart {
       setTimeout(() => {
         this.resizeObserver!.observe(this.rootContainer);
       }, 100);
+
     }
     // window.addEventListener('resize', this.handleResize.bind(this));
     if (this.config.showTooltip) {
@@ -411,123 +413,215 @@ export class GanttChart {
     ctx.save();
     ctx.translate(-this.scrollLeft, 0);
 
-    ctx.fillStyle = '#f9f9f9';
+    ctx.fillStyle = this.config.headerBgColor;
     ctx.fillRect(this.scrollLeft, 0, this.viewportWidth, h);
 
     ctx.textBaseline = 'middle';
-    // Use better font rendering settings
     ctx.textRendering = 'optimizeLegibility';
-    // ctx.webkitFontSmoothing = 'antialiased';
-    // ctx.mozOsxFontSmoothing = 'grayscale';
 
     let currentDate = new Date(this.visibleDateRange.start);
     currentDate = this.getIterationStartDate(currentDate);
 
-    let lastUpperText = '';
+    // Keep track of currently visible year/month blocks
+    const visibleBlocks: Array<{ startX: number, endX: number, text: string, yPos: number }> = [];
 
-    while (this.dateToX(currentDate) < this.scrollLeft - this.pixelsPerDay * 7) {
+    // Pre-calculate all visible date blocks with their year/month labels
+    let calcDate = new Date(currentDate);
+
+    while (calcDate <= this.visibleDateRange.end) {
+      let nextDate: Date;
+      let upperText = '';
+
+      switch (this.config.viewMode) {
+        case 'Day':
+          upperText = DateUtils.format(calcDate, 'yyyy年MM月');
+          nextDate = DateUtils.addDays(calcDate, 1);
+          break;
+        case 'Week':
+          const weekStart = DateUtils.getStartOfWeek(calcDate);
+          upperText = DateUtils.format(weekStart, 'yyyy年MM月');
+          nextDate = DateUtils.addDays(weekStart, 7);
+          break;
+        case 'Month':
+          upperText = `${calcDate.getFullYear()}年`;
+          nextDate = DateUtils.addMonths(calcDate, 1);
+          break;
+        case 'Year':
+          if (calcDate.getMonth() === 0 && calcDate.getDate() === 1) {
+            upperText = `${calcDate.getFullYear()}年`;
+            nextDate = DateUtils.addMonths(calcDate, 6);
+          } else if (calcDate.getMonth() === 6 && calcDate.getDate() === 1) {
+            upperText = `${calcDate.getFullYear()}年`;
+            nextDate = DateUtils.addMonths(calcDate, 6);
+          } else {
+            calcDate = DateUtils.addDays(calcDate, 1);
+            continue;
+          }
+          break;
+        default:
+          nextDate = DateUtils.addDays(calcDate, 1);
+          break;
+      }
+
+      const startX = this.dateToX(calcDate);
+      const endX = this.dateToX(nextDate);
+
+      // Add block info for later rendering
+      visibleBlocks.push({
+        startX,
+        endX,
+        text: upperText,
+        yPos: h * 0.35
+      });
+
+      calcDate = nextDate;
+    }
+
+    // Render the lower text (day/week/month indicators) as before
+    let currentDateForLower = new Date(currentDate);
+
+    while (this.dateToX(currentDateForLower) < this.scrollLeft - this.pixelsPerDay * 7) {
       let nextDate: Date;
       switch (this.config.viewMode) {
         case 'Day':
-          nextDate = DateUtils.addDays(currentDate, 1);
+          nextDate = DateUtils.addDays(currentDateForLower, 1);
           break;
         case 'Week':
-          nextDate = DateUtils.addDays(currentDate, 7);
+          nextDate = DateUtils.addDays(currentDateForLower, 7);
           break;
         case 'Month':
-          nextDate = DateUtils.addMonths(currentDate, 1);
+          nextDate = DateUtils.addMonths(currentDateForLower, 1);
           break;
         case 'Year':
-          nextDate = DateUtils.addMonths(currentDate, 6);
+          nextDate = DateUtils.addMonths(currentDateForLower, 6);
           break;
         default:
-          nextDate = DateUtils.addDays(currentDate, 1);
+          nextDate = DateUtils.addDays(currentDateForLower, 1);
           break;
       }
-      if (nextDate.getTime() === currentDate.getTime()) {
-        currentDate = DateUtils.addDays(currentDate, 1);
+      if (nextDate.getTime() === currentDateForLower.getTime()) {
+        currentDateForLower = DateUtils.addDays(currentDateForLower, 1);
       } else {
-        currentDate = nextDate;
+        currentDateForLower = nextDate;
       }
     }
 
-    while (currentDate <= this.visibleDateRange.end) {
-      const x = this.dateToX(currentDate);
-      let upperText = '',
-        lowerText = '',
-        nextDate: Date;
+    // Group consecutive blocks with same upperText
+    const groupedBlocks = this.groupConsecutiveBlocks(visibleBlocks);
+
+    // Render year/month headers that span across multiple units
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+    ctx.textAlign = 'left';
+
+    groupedBlocks.forEach(group => {
+      // Only render if the block is visible
+      const visibleStart = Math.max(group.startX, this.scrollLeft);
+      const visibleEnd = Math.min(group.endX, this.scrollLeft + this.viewportWidth);
+
+      if (visibleEnd > visibleStart) {
+        // Draw background for the header area
+        ctx.fillStyle = this.config.headerBgColor;
+        ctx.fillRect(visibleStart, 0, visibleEnd - visibleStart, h * 0.5);
+
+        // Draw the year/month text
+        ctx.fillStyle = '#333';
+        ctx.fillText(group.text, visibleStart + 5, group.yPos);
+      }
+    });
+
+    // Render lower text and grid lines
+    while (currentDateForLower <= this.visibleDateRange.end) {
+      const x = this.dateToX(currentDateForLower);
+      let lowerText = '';
+      let nextDate: Date;
 
       switch (this.config.viewMode) {
         case 'Day':
-          upperText = DateUtils.format(currentDate, 'yyyy年MM月');
-          lowerText = `${DateUtils.format(currentDate, 'd')} ${DateUtils.format(currentDate, 'W')}`;
-          nextDate = DateUtils.addDays(currentDate, 1);
+          lowerText = `${DateUtils.format(currentDateForLower, 'd')} ${DateUtils.format(currentDateForLower, 'W')}`;
+          nextDate = DateUtils.addDays(currentDateForLower, 1);
           break;
         case 'Week':
-          const weekStart = DateUtils.getStartOfWeek(currentDate);
-          upperText = DateUtils.format(weekStart, 'yyyy年MM月');
+          const weekStart = DateUtils.getStartOfWeek(currentDateForLower);
           lowerText = `第${DateUtils.getWeekNumber(weekStart)}周`;
           nextDate = DateUtils.addDays(weekStart, 7);
           break;
         case 'Month':
-          upperText = `${currentDate.getFullYear()}年`;
-          lowerText = `${currentDate.getMonth() + 1}月`;
-          nextDate = DateUtils.addMonths(currentDate, 1);
+          lowerText = `${currentDateForLower.getMonth() + 1}月`;
+          nextDate = DateUtils.addMonths(currentDateForLower, 1);
           break;
         case 'Year':
-          if (currentDate.getMonth() === 0 && currentDate.getDate() === 1) {
-            upperText = `${currentDate.getFullYear()}年`;
+          if (currentDateForLower.getMonth() === 0 && currentDateForLower.getDate() === 1) {
             lowerText = `上半年`;
-            nextDate = DateUtils.addMonths(currentDate, 6);
-          } else if (currentDate.getMonth() === 6 && currentDate.getDate() === 1) {
-            upperText = `${currentDate.getFullYear()}年`;
+            nextDate = DateUtils.addMonths(currentDateForLower, 6);
+          } else if (currentDateForLower.getMonth() === 6 && currentDateForLower.getDate() === 1) {
             lowerText = `下半年`;
-            nextDate = DateUtils.addMonths(currentDate, 6);
+            nextDate = DateUtils.addMonths(currentDateForLower, 6);
           } else {
-            currentDate = DateUtils.addDays(currentDate, 1);
+            currentDateForLower = DateUtils.addDays(currentDateForLower, 1);
             continue;
           }
+          break;
+        default:
+          nextDate = DateUtils.addDays(currentDateForLower, 1);
           break;
       }
 
       const unitWidth = this.dateToX(nextDate) - x;
 
-      if (upperText !== lastUpperText) {
-        ctx.fillStyle = '#333';
-        ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-        ctx.textRendering = 'optimizeLegibility';
-        ctx.textAlign = 'left';
-        ctx.fillText(upperText, x + 5, h * 0.35);
-        lastUpperText = upperText;
-      }
-
+      // Render lower text
       ctx.fillStyle = '#000412';
       ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-
       ctx.textAlign = 'center';
-
       ctx.fillText(lowerText, Math.round(x + unitWidth / 2), Math.round(h * 0.7));
 
+      // Render grid lines
       ctx.beginPath();
       ctx.moveTo(x, h * 0.5);
       ctx.lineTo(x, h);
       ctx.strokeStyle = '#e0e0e0';
       ctx.stroke();
 
-      if (nextDate.getTime() === currentDate.getTime()) {
-        currentDate = DateUtils.addDays(currentDate, 1);
+      if (nextDate.getTime() === currentDateForLower.getTime()) {
+        currentDateForLower = DateUtils.addDays(currentDateForLower, 1);
       } else {
-        currentDate = nextDate;
+        currentDateForLower = nextDate;
       }
     }
 
+    // Draw bottom border
     ctx.beginPath();
     ctx.moveTo(this.scrollLeft, h - 0.5);
     ctx.lineTo(this.scrollLeft + this.viewportWidth, h - 0.5);
     ctx.strokeStyle = '#e0e0e0';
     ctx.stroke();
+
     ctx.restore();
   }
+
+  // Helper method to group consecutive blocks with same text
+  private groupConsecutiveBlocks(blocks: Array<{ startX: number, endX: number, text: string, yPos: number }>):
+    Array<{ startX: number, endX: number, text: string, yPos: number }> {
+
+    if (blocks.length === 0) return [];
+
+    const grouped: Array<{ startX: number, endX: number, text: string, yPos: number }> = [];
+    let currentGroup = { ...blocks[0] };
+
+    for (let i = 1; i < blocks.length; i++) {
+      if (blocks[i].text === currentGroup.text &&
+        Math.abs(blocks[i].startX - currentGroup.endX) < 1) { // Consecutive blocks
+        currentGroup.endX = blocks[i].endX;
+      } else {
+        grouped.push(currentGroup);
+        currentGroup = { ...blocks[i] };
+      }
+    }
+
+    grouped.push(currentGroup);
+    return grouped;
+  }
+
 
   private renderMain(): void {
     const ctx = this.mainCtx;

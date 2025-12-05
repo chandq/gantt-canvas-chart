@@ -32,6 +32,7 @@ export interface GanttConfig {
   viewMode?: 'Day' | 'Week' | 'Month' | 'Year';
   planBorderColor?: string;
   actualBgColor?: string;
+  headerBgColor?: string;
   rowHeight?: number;
   headerHeight?: number;
   showPlan?: boolean;
