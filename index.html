@@ -178,7 +178,11 @@
         const extTableScroll = document.getElementById('external-table-scroll');
         const extTableHeader = document.getElementById('external-table-header');
 
-        const chart = new GanttChart(rootEl, getDemo1Data(), { showLeftRemark: true, showRightRemark: true });
+        const ganttChart = new GanttChart(rootEl, getDemo1Data(), {
+          showLeftRemark: true,
+          showRightRemark: true,
+          enabledLoadMore: ['left', 'right']
+        });
 
         function buildExternalSidebar(data, config) {
           let html = '';
@@ -194,7 +198,19 @@
 
         function loadDemo1() {
           const data = getDemo1Data();
-          chart.setData(data, {
+          // Example usage:
+          ganttChart.setOnDataLoadCallback(async (direction, { date }) => {
+            // Simulate API call
+            const response = await fetch(
+              `http://localhost:8090/mock/api/gantt-data?direction=${direction}&date=${
+                direction === 'left' ? ganttChart.minDate : ganttChart.maxDate
+              }`
+            );
+            const newData = await response.json();
+            console.log('newData', newData);
+            return newData;
+          });
+          ganttChart.setData(data, {
             showCenterRemark: true,
             showLeftRemark: true,
             showRightRemark: true,
@@ -242,8 +258,8 @@
               return html + planHtml + actualHtml;
             }
           });
-          console.log('chart', chart);
-          // chart.updateConfig({
+          console.log('ganttChart', ganttChart);
+          // ganttChart.updateConfig({
           //   showCenterRemark: true,
           //   showLeftRemark: true,
           //   showRightRemark: true,
@@ -298,13 +314,13 @@
           demo2Btn.classList.replace('bg-blue-600', 'bg-gray-100');
           demo2Btn.classList.replace('text-white', 'text-gray-700');
           extTableHeader.textContent = '项目/任务 (外部)';
-          buildExternalSidebar(data, chart.config);
+          buildExternalSidebar(data, ganttChart.config);
         }
 
         function loadDemo2() {
           const data = getDemo2Data();
-          chart.setData(data);
-          chart.updateConfig({
+          ganttChart.setData(data);
+          ganttChart.updateConfig({
             showLeftRemark: false,
             showRightRemark: false,
             showCenterRemark: true,
@@ -314,12 +330,13 @@
             tooltipColor: 'white',
             tooltipFormat: null
           });
+          ganttChart.setOnDataLoadCallback(null);
           demo2Btn.classList.replace('bg-gray-100', 'bg-blue-600');
           demo2Btn.classList.replace('text-gray-700', 'text-white');
           demo1Btn.classList.replace('bg-blue-600', 'bg-gray-100');
           demo1Btn.classList.replace('text-white', 'text-gray-700');
           extTableHeader.textContent = '人员/资源 (外部)';
-          buildExternalSidebar(data, chart.config);
+          buildExternalSidebar(data, ganttChart.config);
         }
 
         demo1Btn.addEventListener('click', loadDemo1);
@@ -327,24 +344,24 @@
 
         document.querySelectorAll('.btn-view').forEach(btn => {
           btn.addEventListener('click', () => {
-            chart.updateConfig({ viewMode: btn.dataset.view });
+            ganttChart.updateConfig({ viewMode: btn.dataset.view });
             document.querySelectorAll('.btn-view').forEach(b => {
               b.classList.remove('bg-blue-500', 'text-white');
               b.classList.add('bg-gray-100', 'text-gray-700');
             });
             btn.classList.add('bg-blue-500', 'text-white');
             btn.classList.remove('bg-gray-100', 'text-gray-700');
-            setTimeout(() => {
-              chart.horizontalScrollTo();
-              // chart.verticalScrollTo({ rowIndex: 4 });
-              chart.verticalScrollTo({ rowId: 'proj_virt_55' });
-            }, 0);
+            // setTimeout(() => {
+            //   ganttChart.horizontalScrollTo();
+            //   // ganttChart.verticalScrollTo({ rowIndex: 4 });
+            //   ganttChart.verticalScrollTo({ rowId: 'proj_virt_55' });
+            // }, 0);
           });
         });
 
         let isGanttScrolling = false,
           isTableScrolling = false;
-        chart.container.addEventListener('ganttscroll', e => {
+        ganttChart.container.addEventListener('ganttscroll', e => {
           if (isTableScrolling) return;
           isGanttScrolling = true;
           extTableScroll.scrollTop = e.detail.scrollTop;
@@ -355,7 +372,7 @@
         extTableScroll.addEventListener('scroll', () => {
           if (isGanttScrolling) return;
           isTableScrolling = true;
-          chart.setScrollTop(extTableScroll.scrollTop);
+          ganttChart.setScrollTop(extTableScroll.scrollTop);
           setTimeout(() => {
             isTableScrolling = false;
           }, 0);

@@ -44,9 +44,14 @@ export class GanttChart {
   private taskPositions: Map<string, TaskPosition>;
   private taskMap: Map<string, { row: number; task: Task }>;
 
-  // private handleMouseMove: (e: MouseEvent) => void;
-  // private handleMouseLeave: (e: MouseEvent) => void;
-  // private handleScroll: (e: Event) => void;
+  private isLoadingData: boolean = false;
+  private hasMoreDataLeft: boolean = true;
+  private hasMoreDataRight: boolean = true;
+  private hasMoreDataBottom: boolean = true;
+  private lastScrollLeft: number = 0;
+  private lastScrollTop: number = 0;
+  private onDataLoad: ((direction: 'left' | 'right' | 'bottom', params?: any) => Promise<GanttData | null>) | null = null;
+  private scrollLoadTimer: number | null = null;
 
   constructor(rootContainer: HTMLElement, data: GanttData, config: GanttConfig = {}) {
 
@@ -95,6 +100,7 @@ export class GanttChart {
       todayColor: '#ff4d4f',
       offsetTop: 0,
       offsetLeft: 0,
+      enabledLoadMore: [],
       viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
 
       planBorderColor: '#C1EFCF',
@@ -102,7 +108,7 @@ export class GanttChart {
       headerBgColor: '#f9f9f9',
       ...config
     };
-
+    this.updateLoadMoreConf()
 
     this.headerCanvas = headerCanvas as HTMLCanvasElement;
     this.mainCanvas = mainCanvas as HTMLCanvasElement;
@@ -146,12 +152,19 @@ export class GanttChart {
     this.init();
   }
 
+
   private init(): void {
     this.buildTaskMap();
     this.calculateFullTimeline();
     this.updatePixelsPerDay();
     this.setupEvents();
     this.handleResize();
+  }
+
+  private updateLoadMoreConf() {
+    this.hasMoreDataLeft = this.config.enabledLoadMore.includes('left')
+    this.hasMoreDataRight = this.config.enabledLoadMore.includes('right')
+    this.hasMoreDataBottom = this.config.enabledLoadMore.includes('bottom')
   }
 
   private buildTaskMap(): void {
@@ -186,6 +199,7 @@ export class GanttChart {
       this.updatePixelsPerDay();
       this.calculateFullTimeline();
     }
+    this.updateLoadMoreConf();
     this.updateDimensions();
     this.render();
   }
@@ -291,6 +305,12 @@ export class GanttChart {
     this.render();
   }
 
+  // Add this method to register the data loading callback
+  public setOnDataLoadCallback(callback: (direction: 'left' | 'right' | 'bottom', params?: any) => Promise<GanttData>): void {
+    this.onDataLoad = callback;
+  }
+
+
   private handleScroll(e: Event): void {
     if (this.showTooltip) {
       this.handleMouseLeave();
@@ -304,11 +324,172 @@ export class GanttChart {
     });
     this.container.dispatchEvent(event);
 
+    if (this.config.enabledLoadMore.length > 0) {
+
+      // Clear any existing scroll load timer
+      if (this.scrollLoadTimer !== null) {
+        clearTimeout(this.scrollLoadTimer);
+        this.scrollLoadTimer = null;
+      }
+
+      // Schedule scroll load check with proper typing
+      this.scrollLoadTimer = window.setTimeout(() => {
+        this.checkScrollLoad();
+        this.scrollLoadTimer = null;
+      }, 100);
+    }
+
     requestAnimationFrame(() => {
       this.scrolling = true;
       this.render(true)
       this.scrolling = false;
     });
+  }
+  //  checkScrollLoad method
+  private async checkScrollLoad(): Promise<void> {
+    if (this.isLoadingData || !this.onDataLoad) {
+      return;
+    }
+
+    const scrollLeft = this.scrollLeft;
+    const scrollTop = this.scrollTop;
+    const viewportWidth = this.viewportWidth;
+    const viewportHeight = this.viewportHeight;
+    const totalWidth = this.totalWidth;
+    const totalHeight = this.totalHeight;
+
+    // Check if we're actually at the edges with proper thresholds
+    const atLeftEdge = scrollLeft <= 5;
+    const atRightEdge = scrollLeft + viewportWidth >= totalWidth - 5;
+    const atBottomEdge = scrollTop + viewportHeight >= totalHeight - 5;
+
+    // Only trigger one direction at a time based on priority and current position
+    try {
+      if (this.hasMoreDataLeft && atLeftEdge && scrollLeft < this.lastScrollLeft) {
+        // Moving left and at left edge
+        await this.loadMoreData('left');
+        console.log('left-loadMoreData::', this.data)
+      } else if (this.hasMoreDataRight && atRightEdge && scrollLeft > this.lastScrollLeft) {
+        // Moving right and at right edge
+        await this.loadMoreData('right');
+        console.log('right-loadMoreData::', this.data)
+      } else if (this.hasMoreDataBottom && atBottomEdge && scrollTop > this.lastScrollTop) {
+        // Moving down and at bottom edge
+        await this.loadMoreData('bottom');
+        console.log('bottom-loadMoreData::', this.data)
+      }
+    } finally {
+      // Always update last scroll positions
+      this.lastScrollLeft = scrollLeft;
+      this.lastScrollTop = scrollTop;
+    }
+  }
+  // Add this method to reset scroll loading state
+  public resetScrollLoadingState(): void {
+    this.hasMoreDataLeft = true;
+    this.hasMoreDataRight = true;
+    this.hasMoreDataBottom = true;
+    this.lastScrollLeft = 0;
+    this.lastScrollTop = 0;
+
+    // Clear any pending scroll load timers
+    if (this.scrollLoadTimer !== null) {
+      clearTimeout(this.scrollLoadTimer);
+      this.scrollLoadTimer = null;
+    }
+  }
+
+  // Add this new method to load additional data
+  private async loadMoreData(direction: 'left' | 'right' | 'bottom'): Promise<void> {
+    if (this.isLoadingData || !this.onDataLoad) {
+      return;
+    }
+
+    this.isLoadingData = true;
+
+    try {
+      let newData: GanttData | null = null;
+
+      switch (direction) {
+        case 'left':
+          newData = await this.onDataLoad('left', { date: this.minDate });
+          if (newData && newData.length > 0) {
+            this.prependData(newData);
+          } else {
+            this.hasMoreDataLeft = false;
+          }
+          break;
+
+        case 'right':
+          newData = await this.onDataLoad('right', { date: this.maxDate });
+          if (newData && newData.length > 0) {
+            this.appendData(newData);
+          } else {
+            this.hasMoreDataRight = false;
+          }
+          break;
+
+        case 'bottom':
+          const currentRowCount = this.data.length;
+          newData = await this.onDataLoad('bottom', { offset: currentRowCount });
+          if (newData && newData.length > 0) {
+            this.appendRows(newData);
+          } else {
+            this.hasMoreDataBottom = false;
+          }
+          break;
+      }
+
+      if (newData && newData.length > 0) {
+        // Recalculate timeline and update dimensions
+        this.calculateFullTimeline();
+        this.updateDimensions();
+        this.buildTaskMap();
+        this.render();
+      }
+    } catch (error) {
+      console.error('Error loading additional data:', error);
+    } finally {
+      this.isLoadingData = false;
+    }
+  }
+
+  // Add this method to append data to the right
+  private appendData(newData: GanttData): void {
+    // Merge new data with existing data
+    newData.forEach((newRow, index) => {
+      if (index < this.data.length) {
+        // Append tasks to existing rows
+        this.data[index].tasks = [...this.data[index].tasks, ...newRow.tasks];
+      } else {
+        // Add new rows if needed
+        this.data.push(newRow);
+      }
+    });
+  }
+
+  // Add this method to prepend data to the left
+  private prependData(newData: GanttData): void {
+    // Update timeline start to account for prepended data
+    // This requires adjusting all existing task dates
+
+    // For simplicity in this example, we'll just append the data
+    // A full implementation would need to properly adjust dates and positions
+    newData.forEach((newRow, index) => {
+      if (index < this.data.length) {
+        // Prepend tasks to existing rows
+        this.data[index].tasks = [...newRow.tasks, ...this.data[index].tasks];
+      } else {
+        // Add new rows if needed
+        this.data.push(newRow);
+      }
+    });
+  }
+
+  // Add this method to append rows to the bottom
+  private appendRows(newData: GanttData): void {
+    // Simply add new rows at the bottom
+    this.data.push(...newData);
   }
 
   public setScrollTop(scrollTop: number): void {

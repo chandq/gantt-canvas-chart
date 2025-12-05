@@ -179,10 +179,10 @@ export function getDemo1Data(): GanttData {
           name: `任务 ${i}.2`,
           planStart: '2025-12-12',
           planEnd: '2025-12-20',
-          // dependencies: [i === 0 ? 't6' : `vt_${i - 1}_2`],
+          dependencies: [i === 0 ? 't6' : `vt_${i - 1}_2`],
           styleClass: 'demo1-task'
         },
-        ...Array.from({ length: 5 }, (_, j) => ({
+        ...Array.from({ length: 100 }, (_, j) => ({
           id: `vt_${i}_${j + 3}`,
           name: `任务 ${i}.${j + 3}`,
           planStart: DateUtils.format(DateUtils.addDays(currentDay, j + 5), 'yyyy-MM-dd'),

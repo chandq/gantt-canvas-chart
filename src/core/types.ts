@@ -28,6 +28,8 @@ export interface Row {
 
 export type GanttData = Row[]
 
+export type LoadMoreDirection = 'left' | 'right' | 'bottom'
+
 export interface GanttConfig {
   viewMode?: 'Day' | 'Week' | 'Month' | 'Year';
   planBorderColor?: string;
@@ -47,6 +49,7 @@ export interface GanttConfig {
   todayColor?: string;
   offsetTop?: number;
   offsetLeft?: number;
+  enabledLoadMore?: [LoadMoreDirection?, LoadMoreDirection?, LoadMoreDirection?]
   viewFactors?: { Day: number, Week: number, Month: number, Year: number },
   tooltipFormat?: null | ((task: Row, date: Date, config: GanttConfig) => string);
 }
