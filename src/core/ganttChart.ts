@@ -442,9 +442,9 @@ export class GanttChart {
 
       if (newData && newData.length > 0) {
         // Recalculate timeline and update dimensions
+        this.buildTaskMap();
         this.calculateFullTimeline();
         this.updateDimensions();
-        this.buildTaskMap();
         this.render();
       }
     } catch (error) {
@@ -577,7 +577,6 @@ export class GanttChart {
     // console.trace()
     this.updateVirtualRanges();
     if (!scrolling) {
-
       this.calculateAllTaskPositions();
     }
     this.renderHeader();
