@@ -18,6 +18,8 @@ export class GanttChart {
   private mainCanvas: HTMLCanvasElement;
   private scrollDummy: HTMLElement;
   private tooltip: HTMLElement;
+  private scrolling: boolean;
+  private showTooltip: boolean;
 
   private headerCtx: CanvasRenderingContext2D;
   private mainCtx: CanvasRenderingContext2D;
@@ -36,16 +38,15 @@ export class GanttChart {
   private viewportHeight: number;
   private totalWidth: number;
   private totalHeight: number;
-  private scrolling: boolean;
 
   private resizeObserver: ResizeObserver | null;
 
   private taskPositions: Map<string, TaskPosition>;
   private taskMap: Map<string, { row: number; task: Task }>;
 
-  private boundHandleMouseMove: (e: MouseEvent) => void;
-  private boundHandleMouseLeave: (e: MouseEvent) => void;
-  private boundHandleScroll: (e: Event) => void;
+  // private handleMouseMove: (e: MouseEvent) => void;
+  // private handleMouseLeave: (e: MouseEvent) => void;
+  // private handleScroll: (e: Event) => void;
 
   constructor(rootContainer: HTMLElement, data: GanttData, config: GanttConfig = {}) {
 
@@ -76,6 +77,7 @@ export class GanttChart {
     this.container = container;
     this.data = data;
     this.scrolling = false;
+    this.showTooltip = false;
     this.config = {
       viewMode: 'Month',
       rowHeight: 48,
@@ -133,10 +135,11 @@ export class GanttChart {
     this.taskPositions = new Map();
     this.taskMap = new Map();
 
-    this.boundHandleMouseMove = this.handleMouseMove.bind(this);
-    this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
-    this.boundHandleScroll = this.handleScroll.bind(this);
-    this.scrollToStartDate = this.scrollToStartDate.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.handleScroll = this.handleScroll.bind(this);
+    this.horizontalScrollTo = this.horizontalScrollTo.bind(this);
+    this.verticalScrollTo = this.verticalScrollTo.bind(this);
 
 
     this.init();
@@ -158,7 +161,7 @@ export class GanttChart {
   }
 
   private setupEvents(): void {
-    this.container.addEventListener('scroll', this.boundHandleScroll, { passive: true });
+    this.container.addEventListener('scroll', this.handleScroll);
     this.handleResize = this.handleResize.bind(this);
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(this.handleResize);
@@ -168,8 +171,8 @@ export class GanttChart {
     }
     // window.addEventListener('resize', this.handleResize.bind(this));
     if (this.config.showTooltip) {
-      this.mainCanvas.addEventListener('mousemove', this.boundHandleMouseMove);
-      this.mainCanvas.addEventListener('mouseleave', this.boundHandleMouseLeave);
+      this.mainCanvas.addEventListener('mousemove', this.handleMouseMove);
+      this.mainCanvas.addEventListener('mouseleave', this.handleMouseLeave);
     }
   }
 
@@ -179,7 +182,7 @@ export class GanttChart {
       this.container.scrollLeft = 0;
       this.scrollLeft = 0;
       this.updatePixelsPerDay();
-      // this.calculateFullTimeline();
+      this.calculateFullTimeline();
     }
     this.updateDimensions();
     this.render();
@@ -201,9 +204,9 @@ export class GanttChart {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
-    this.container.removeEventListener('scroll', this.boundHandleScroll);
-    this.mainCanvas.removeEventListener('mousemove', this.boundHandleMouseMove);
-    this.mainCanvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+    this.container.removeEventListener('scroll', this.handleScroll);
+    this.mainCanvas.removeEventListener('mousemove', this.handleMouseMove);
+    this.mainCanvas.removeEventListener('mouseleave', this.handleMouseLeave);
 
     this.container.remove();
     // window.removeEventListener('resize', this.handleResize);
@@ -287,6 +290,9 @@ export class GanttChart {
   }
 
   private handleScroll(e: Event): void {
+    if (this.showTooltip) {
+      this.handleMouseLeave();
+    }
     const target = e.target as HTMLElement;
     this.scrollLeft = target.scrollLeft;
     this.scrollTop = target.scrollTop;
@@ -298,7 +304,7 @@ export class GanttChart {
 
     requestAnimationFrame(() => {
       this.scrolling = true;
-      this.render()
+      this.render(true)
       this.scrolling = false;
     });
   }
@@ -382,12 +388,15 @@ export class GanttChart {
     }
   }
 
-  public render(): void {
+  public render(scrolling = false): void {
     // const timeStart = performance.now();
     // console.log('render',);
     // console.trace()
     this.updateVirtualRanges();
-    this.calculateAllTaskPositions();
+    if (!scrolling) {
+
+      this.calculateAllTaskPositions();
+    }
     this.renderHeader();
     this.renderMain();
     // const timeEnd = performance.now();
@@ -850,6 +859,7 @@ export class GanttChart {
   }
 
   private handleMouseMove(e: MouseEvent): void {
+
     if (this.scrolling) {
       return
     }
@@ -867,7 +877,8 @@ export class GanttChart {
     if (this.config.tooltipFormat) {
       const htmlStr = this.config.tooltipFormat(row, date, this.config);
       if (!htmlStr) {
-        return this.handleMouseLeave();
+        this.handleMouseLeave();
+        return
       }
       this.tooltip.innerHTML = htmlStr;
     } else {
@@ -894,6 +905,7 @@ export class GanttChart {
     }
 
     this.tooltip.style.display = 'block';
+    this.showTooltip = true;
     if (this.config.tooltipColor === 'white') {
       this.tooltip.style.background = '#fff';
       this.tooltip.style.color = '#000'
@@ -927,6 +939,7 @@ export class GanttChart {
 
   private handleMouseLeave(): void {
     this.tooltip.style.display = 'none';
+    this.showTooltip = false;
   }
   /**
    * 计算任务宽度占的百分比（方便绘制精确到具体时间的每日任务）
@@ -939,11 +952,11 @@ export class GanttChart {
   }
 
   /**
-   * scroll to specified date position, default to minDate
+   * horizontal scroll to specified date position, default to minDate
    *
    * @param date
    */
-  scrollToStartDate(date?: Date): void {
+  horizontalScrollTo(date?: Date): void {
     const startDate = date ? date : this.minDate;
     if (startDate) {
       const xPosition = this.dateToX(startDate);
@@ -951,5 +964,18 @@ export class GanttChart {
     }
   }
 
+  /**
+   * vertical scroll to specified position
+   *
+   * @param  params
+   */
+  verticalScrollTo(params: { rowId: string, rowIndex: number }): void {
+    if (params && (params.rowId || params.rowIndex)) {
+
+      const rowIndex = params.rowIndex ? params.rowIndex : this.data.findIndex(row => row.id === params.rowId);
+      const yPosition = this.config.rowHeight * rowIndex;
+      this.container.scrollTo({ top: yPosition - 80, });
+    }
+  }
 
 }

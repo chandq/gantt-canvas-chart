@@ -202,7 +202,7 @@
             showPlan: true,
             rowHeight: 30,
             tooltipColor: 'black',
-            tooltipFormat: (row, date, config) => {
+            tooltipFormat1: (row, date, config) => {
               const overlappingTasks = row.tasks.filter(task => {
                 const pStart = new Date(task.planStart),
                   pEnd = DateUtils.addDays(new Date(task.planEnd), 1);
@@ -335,7 +335,9 @@
             btn.classList.add('bg-blue-500', 'text-white');
             btn.classList.remove('bg-gray-100', 'text-gray-700');
             setTimeout(() => {
-              chart.scrollToStartDate();
+              chart.horizontalScrollTo();
+              // chart.verticalScrollTo({ rowIndex: 4 });
+              chart.verticalScrollTo({ rowId: 'proj_virt_55' });
             }, 0);
           });
         });
