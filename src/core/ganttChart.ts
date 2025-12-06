@@ -55,6 +55,10 @@ export class GanttChart {
 
   constructor(rootContainer: HTMLElement, data: GanttData, config: GanttConfig = {}) {
 
+    if (rootContainer.querySelector('.__gantt-chart-container')) {
+      throw new Error('GanttChart already exists in this container');
+    }
+
     const container = document.createElement('div');
     const scrollEl = document.createElement('div');
     const headerCanvas = document.createElement('canvas');
@@ -389,9 +393,8 @@ export class GanttChart {
   }
   // Add this method to reset scroll loading state
   public resetScrollLoadingState(): void {
-    this.hasMoreDataLeft = true;
-    this.hasMoreDataRight = true;
-    this.hasMoreDataBottom = true;
+
+    this.updateLoadMoreConf();
     this.lastScrollLeft = 0;
     this.lastScrollTop = 0;
 
