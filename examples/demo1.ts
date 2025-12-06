@@ -1,5 +1,5 @@
 import type { GanttData } from '../src/core/types';
-import { GanttChart } from '../src/core/ganttChart';
+// import { GanttChart } from '../src/core/ganttChart';
 import { DateUtils } from '../src/core/dateUtils';
 
 const currentDay = new Date();
@@ -167,7 +167,7 @@ export function getDemo1Data(): GanttData {
         }
       ]
     },
-    ...Array.from({ length: 100 }, (_, i) => ({
+    ...Array.from({ length: 500 }, (_, i) => ({
       id: `proj_virt_${i}`,
       name: `虚拟项目 ${i + 1}`,
       tasks: [

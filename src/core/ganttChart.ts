@@ -147,6 +147,7 @@ export class GanttChart {
     this.handleScroll = this.handleScroll.bind(this);
     this.horizontalScrollTo = this.horizontalScrollTo.bind(this);
     this.verticalScrollTo = this.verticalScrollTo.bind(this);
+    this.handleResize = this.handleResize.bind(this);
 
 
     this.init();
@@ -176,7 +177,6 @@ export class GanttChart {
 
   private setupEvents(): void {
     this.container.addEventListener('scroll', this.handleScroll);
-    this.handleResize = this.handleResize.bind(this);
     if (window.ResizeObserver) {
       this.resizeObserver = new ResizeObserver(this.handleResize);
       setTimeout(() => {
@@ -371,15 +371,15 @@ export class GanttChart {
       if (this.hasMoreDataLeft && atLeftEdge && scrollLeft < this.lastScrollLeft) {
         // Moving left and at left edge
         await this.loadMoreData('left');
-        console.log('left-loadMoreData::', this.data)
+        // console.log('left-loadMoreData::', this.data)
       } else if (this.hasMoreDataRight && atRightEdge && scrollLeft > this.lastScrollLeft) {
         // Moving right and at right edge
         await this.loadMoreData('right');
-        console.log('right-loadMoreData::', this.data)
+        // console.log('right-loadMoreData::', this.data)
       } else if (this.hasMoreDataBottom && atBottomEdge && scrollTop > this.lastScrollTop) {
         // Moving down and at bottom edge
         await this.loadMoreData('bottom');
-        console.log('bottom-loadMoreData::', this.data)
+        // console.log('bottom-loadMoreData::', this.data)
       }
     } finally {
       // Always update last scroll positions
@@ -540,19 +540,46 @@ export class GanttChart {
 
         const x_plan_start = this.dateToX(new Date(task.planStart!));
         const x_plan_end = this.dateToX(DateUtils.addDays(task.planEnd!, 1));
+
         let x_actual_start: number | null = null,
           x_actual_end: number | null = null;
+        let offset_x_plan_start: number = NaN,
+          offset_x_plan_end: number = NaN;
+        let offset_x_actual_start: number | null = null,
+          offset_x_actual_end: number | null = null;
+        let x_plan_width = 0;
+        let x_actual_width = 0
+
+        const [offsetX_actual, percent_actual] = this.config.viewMode === 'Day' && task.actualOffsetPercent ? task.actualOffsetPercent : [0, 1];
+        const [offsetX, percent_plan] = this.config.viewMode === 'Day' && task.planOffsetPercent ? task.planOffsetPercent : [0, 1];
+
+        if (x_plan_start && x_plan_end) {
+          x_plan_width = x_plan_end - x_plan_start;
+          offset_x_plan_start = x_plan_start + x_plan_width * offsetX;
+          x_plan_end && (offset_x_plan_end = offset_x_plan_start + x_plan_width * percent_plan);
+        }
         if (task.actualStart) {
           x_actual_start = this.dateToX(new Date(task.actualStart));
         }
         if (task.actualEnd) {
           x_actual_end = this.dateToX(DateUtils.addDays(task.actualEnd, 1));
         }
+        if (x_actual_start) {
+          x_actual_width = (x_actual_end ? x_actual_end : this.dateToX(this.today))! - x_actual_start;
+          offset_x_actual_start = Math.round(x_actual_start + x_actual_width * offsetX_actual);
+          x_actual_end && (offset_x_actual_end = offset_x_actual_start + x_actual_width * percent_actual);
+        }
         this.taskPositions.set(task.id, {
           x_plan_start,
           x_plan_end,
           x_actual_start,
           x_actual_end,
+          offset_x_plan_start,
+          offset_x_plan_end,
+          offset_x_actual_start,
+          offset_x_actual_end,
+          x_plan_width,
+          x_actual_width,
           y: y + this.config.rowHeight * 0.5,
           row: i
         });
@@ -576,7 +603,7 @@ export class GanttChart {
 
   public render(scrolling = false): void {
     // const timeStart = performance.now();
-    // console.log('render',);
+    // console.log('renderFn', scrolling);
     // console.trace()
     this.updateVirtualRanges();
     if (!scrolling) {
@@ -585,7 +612,7 @@ export class GanttChart {
     this.renderHeader();
     this.renderMain();
     // const timeEnd = performance.now();
-    // console.log(`render time: ${timeEnd - timeStart}ms`);
+    // console.log(`renderFn time: ${timeEnd - timeStart}ms`);
   }
 
   private renderHeader(): void {
@@ -1067,31 +1094,20 @@ export class GanttChart {
 
   private drawTask(ctx: CanvasRenderingContext2D, task: Task, y: number, pos: TaskPosition): void {
     const offset = 4;
-    const width = pos.x_plan_end - pos.x_plan_start;
     const taskY = y + this.config.rowHeight * 0.15 + offset;
     const taskHeight = this.config.rowHeight * 0.7 - offset;
     // const styles = this.getTaskStyles(task);
     const textY = y + this.config.rowHeight / 2 + offset;
 
     const [offsetX_actual, percent_actual] = this.config.viewMode === 'Day' && task.actualOffsetPercent ? task.actualOffsetPercent : [0, 1];
-    const [offsetX, percent_plan] = this.config.viewMode === 'Day' && task.planOffsetPercent ? task.planOffsetPercent : [0, 1];
     // const x_today = this.dateToX(this.today);
     if (this.config.showActual && pos.x_actual_start) {
       ctx.fillStyle = task.actualBgColor ? task.actualBgColor : this.config.actualBgColor;
-      const aWidth = (pos.x_actual_end ? pos.x_actual_end : this.dateToX(this.today))! - pos.x_actual_start;
-      pos.offset_x_actual_start = Math.round(pos.x_actual_start + aWidth * offsetX_actual);
-      pos.x_actual_end && (pos.offset_x_actual_end = pos.offset_x_actual_start + aWidth * percent_actual);
-
-      ctx.fillRect(pos.offset_x_actual_start, Math.round(taskY + 2), Math.round(aWidth * percent_actual), Math.round(taskHeight - 2));
-
+      ctx.fillRect(pos.offset_x_actual_start!, Math.round(taskY + 2), Math.round(pos.x_actual_width * percent_actual), Math.round(taskHeight - 2));
     }
 
     if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
       ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : this.config.planBorderColor;
-
-      pos.offset_x_plan_start = pos.x_plan_start + width * offsetX;
-      pos.x_plan_end && (pos.offset_x_plan_end = pos.offset_x_plan_start + width * percent_plan);
-
       ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(pos.offset_x_plan_start + offset / 2, taskY);
