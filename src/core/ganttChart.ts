@@ -1099,6 +1099,7 @@ export class GanttChart {
     // const styles = this.getTaskStyles(task);
     const textY = y + this.config.rowHeight / 2 + offset;
 
+    // @ts-ignore
     const [offsetX_actual, percent_actual] = this.config.viewMode === 'Day' && task.actualOffsetPercent ? task.actualOffsetPercent : [0, 1];
     // const x_today = this.dateToX(this.today);
     if (this.config.showActual && pos.x_actual_start) {
