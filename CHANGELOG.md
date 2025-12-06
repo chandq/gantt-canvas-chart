@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.3.0...v1.3.1) (2025-12-06)
+
+
+### Bug Fixes
+
+* draw position issue with offsetPercent ([a72d642](https://github.com/chandq/gantt-canvas-chart/commit/a72d642eb0a6c16ae7a7a2c046a6d50cc593708f))
+* not display connecting line when firstly load ([409e6ef](https://github.com/chandq/gantt-canvas-chart/commit/409e6ef05b0f0d2b20a78f901e49c91400d92c28))
+
 ## [1.3.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.2.0...v1.3.0) (2025-12-05)
 
 
