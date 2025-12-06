@@ -20,7 +20,8 @@ export function getDemo1Data(): GanttData {
           actualEnd: '2025-10-01',
           leftRemark: '刘玲',
           rightRemark: '待开始',
-          // planOffsetPercent: [0.1, 0.9]
+          planOffsetPercent: [0.3, 0.5],
+          actualOffsetPercent: [0.3, 0.5],
           // styleClass: 'demo1-task'
         },
         {
@@ -33,7 +34,10 @@ export function getDemo1Data(): GanttData {
           actualEnd: '2025-11-04',
           leftRemark: '龙扥塞缝森我累得',
           rightRemark: '已完成',
-          planOffsetPercent: [0.1, 0.9]
+          // planOffsetPercent: [0.1, 0.9]
+          planOffsetPercent: [0.3, 0.5],
+          actualOffsetPercent: [0.3, 0.5],
+          dependencies: ['t000'],
           // styleClass: 'demo1-task'
         },
         {

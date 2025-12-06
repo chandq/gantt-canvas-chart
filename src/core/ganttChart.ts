@@ -224,6 +224,9 @@ export class GanttChart {
     this.mainCanvas.removeEventListener('mousemove', this.handleMouseMove);
     this.mainCanvas.removeEventListener('mouseleave', this.handleMouseLeave);
 
+    this.data = [];
+    this.taskMap.clear();
+    this.taskPositions.clear();
     this.container.remove();
     // window.removeEventListener('resize', this.handleResize);
   }
@@ -862,9 +865,9 @@ export class GanttChart {
         const fromRowIndex = this.taskMap.get(depId)!.row;
         const isAdjacent = Math.abs(toRowIndex - fromRowIndex) === 1;
 
-        const fromX = Math.max(fromPos.x_plan_end, fromPos.x_actual_end || fromPos.x_plan_end);
+        const fromX = Math.max(fromPos.offset_x_plan_end, fromPos.offset_x_actual_end || fromPos.offset_x_plan_end);
         const fromY = fromPos.y;
-        const toX = Math.min(toPos.x_plan_start, toPos.x_actual_start || toPos.x_plan_start);
+        const toX = Math.min(toPos.offset_x_plan_start, toPos.offset_x_actual_start || toPos.offset_x_plan_start);
         const toY = toPos.y;
 
         ctx.beginPath();
@@ -1076,40 +1079,40 @@ export class GanttChart {
     if (this.config.showActual && pos.x_actual_start) {
       ctx.fillStyle = task.actualBgColor ? task.actualBgColor : this.config.actualBgColor;
       const aWidth = (pos.x_actual_end ? pos.x_actual_end : this.dateToX(this.today))! - pos.x_actual_start;
-      pos.x_actual_start += aWidth * offsetX_actual;
-      pos.x_actual_end && (pos.x_actual_end = pos.x_actual_start + aWidth * percent_actual);
+      pos.offset_x_actual_start = Math.round(pos.x_actual_start + aWidth * offsetX_actual);
+      pos.x_actual_end && (pos.offset_x_actual_end = pos.offset_x_actual_start + aWidth * percent_actual);
 
-      ctx.fillRect(Math.round(pos.x_actual_start), Math.round(taskY + 2), Math.round(aWidth * percent_actual), Math.round(taskHeight - 2));
+      ctx.fillRect(pos.offset_x_actual_start, Math.round(taskY + 2), Math.round(aWidth * percent_actual), Math.round(taskHeight - 2));
 
     }
 
     if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
       ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : this.config.planBorderColor;
 
-      pos.x_plan_start += width * offsetX;
-      pos.x_plan_end && (pos.x_plan_end = pos.x_plan_start + width * percent_plan);
+      pos.offset_x_plan_start = pos.x_plan_start + width * offsetX;
+      pos.x_plan_end && (pos.offset_x_plan_end = pos.offset_x_plan_start + width * percent_plan);
 
       ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.moveTo(pos.x_plan_start + 2, taskY);
-      ctx.lineTo(pos.x_plan_start + width * percent_plan - 2, taskY);
+      ctx.moveTo(pos.offset_x_plan_start + offset / 2, taskY);
+      ctx.lineTo(pos.offset_x_plan_end - offset / 2, taskY);
       ctx.stroke();
     }
 
     ctx.fillStyle = '#000';
     if (this.config.showLeftRemark && task.leftRemark) {
       ctx.textAlign = 'right';
-      ctx.fillText(task.leftRemark, Math.round(Math.min(...[pos.x_plan_start, pos.x_actual_start].filter(val => val !== null && val !== undefined)) - 8), Math.round(textY));
+      ctx.fillText(task.leftRemark, Math.round(Math.min(...[pos.offset_x_plan_start, pos.offset_x_actual_start].filter(val => val !== null && val !== undefined)) - 8), Math.round(textY));
     }
     if (this.config.showRightRemark && task.rightRemark) {
       ctx.textAlign = 'left';
-      ctx.fillText(task.rightRemark, Math.round(Math.max(...[pos.x_plan_end, pos.x_actual_end].filter(val => val !== null && val !== undefined)) + 8), Math.round(textY));
+      ctx.fillText(task.rightRemark, Math.round(Math.max(...[pos.offset_x_plan_end, pos.offset_x_actual_end].filter(val => val !== null && val !== undefined)) + 8), Math.round(textY));
     }
     if (this.config.showCenterRemark && task.centerRemark) {
-      const centerX = pos.x_actual_start! + (pos.x_actual_end! - pos.x_actual_start!) / 2;
+      const centerX = pos.offset_x_actual_start! + (pos.offset_x_actual_end! - pos.offset_x_actual_start!) / 2;
 
       ctx.textAlign = 'center';
-      ctx.fillText(task.centerRemark, Math.round(centerX!), Math.round(textY), Math.round(pos.x_actual_end! - pos.x_actual_start!));
+      ctx.fillText(task.centerRemark, Math.round(centerX!), Math.round(textY), Math.round(pos.offset_x_actual_end! - pos.offset_x_actual_start!));
     }
 
   }

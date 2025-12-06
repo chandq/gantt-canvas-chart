@@ -380,6 +380,9 @@
 
         loadDemo1();
         document.querySelector('.btn-view[data-view="Week"]').click();
+        document.addEventListener('unload', function () {
+          ganttChart.destroy();
+        });
       });
     </script>
   </body>
