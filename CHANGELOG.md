@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.3.1...v1.4.0) (2025-12-08)
+
+
+### Features
+
+* add conf of scrollEdgeThresholds ([9a3daf3](https://github.com/chandq/gantt-canvas-chart/commit/9a3daf3e2f34c55f9cb07b668d8c971df84434db))
+
+
+### Bug Fixes
+
+* check if repeatly create new GanttChart in same container ([751539e](https://github.com/chandq/gantt-canvas-chart/commit/751539e3682979152fbb7554c74e003155d26018))
+* filter valid plan/actual task data ([d4aa435](https://github.com/chandq/gantt-canvas-chart/commit/d4aa4355be2f13a4c263d456522faad6cbc36f58))
+
 ### [1.3.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.3.0...v1.3.1) (2025-12-06)
 
 
