@@ -554,18 +554,27 @@ export class GanttChart {
         let offset_x_actual_start: number | null = null,
           offset_x_actual_end: number | null = null;
         let x_plan_width = 0;
-        let x_actual_width = 0
+        let x_actual_width = 0;
+        let isValidPlanTask = false, isValidActualTask = false;
 
         const [offsetX_actual, percent_actual] = this.config.viewMode === 'Day' && task.actualOffsetPercent ? task.actualOffsetPercent : [0, 1];
         const [offsetX, percent_plan] = this.config.viewMode === 'Day' && task.planOffsetPercent ? task.planOffsetPercent : [0, 1];
 
-        if (x_plan_start && x_plan_end) {
+
+        if (x_plan_start && x_plan_end && x_plan_start < x_plan_end) {
           x_plan_width = x_plan_end - x_plan_start;
           offset_x_plan_start = x_plan_start + x_plan_width * offsetX;
           x_plan_end && (offset_x_plan_end = offset_x_plan_start + x_plan_width * percent_plan);
+          isValidPlanTask = true;
         }
+
         if (task.actualStart) {
           x_actual_start = this.dateToX(new Date(task.actualStart));
+          isValidActualTask = true;
+        }
+
+        if (!isValidPlanTask && !isValidActualTask) {
+          return;
         }
         if (task.actualEnd) {
           x_actual_end = this.dateToX(DateUtils.addDays(task.actualEnd, 1));
