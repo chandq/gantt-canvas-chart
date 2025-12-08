@@ -104,6 +104,7 @@ export class GanttChart {
       todayColor: '#ff4d4f',
       offsetTop: 0,
       offsetLeft: 0,
+      scrollEdgeThresholds: 10,
       enabledLoadMore: [],
       viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
 
@@ -365,10 +366,12 @@ export class GanttChart {
     const totalWidth = this.totalWidth;
     const totalHeight = this.totalHeight;
 
+    const thresholds = this.config.scrollEdgeThresholds;
+
     // Check if we're actually at the edges with proper thresholds
-    const atLeftEdge = scrollLeft <= 5;
-    const atRightEdge = scrollLeft + viewportWidth >= totalWidth - 5;
-    const atBottomEdge = scrollTop + viewportHeight >= totalHeight - 5;
+    const atLeftEdge = scrollLeft <= thresholds;
+    const atRightEdge = scrollLeft + viewportWidth >= totalWidth - thresholds;
+    const atBottomEdge = scrollTop + viewportHeight >= totalHeight - thresholds;
 
     // Only trigger one direction at a time based on priority and current position
     try {
