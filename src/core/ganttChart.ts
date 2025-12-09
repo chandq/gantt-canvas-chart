@@ -11,7 +11,7 @@ import { firstValidValue } from './utils';
 export class GanttChart {
   private rootContainer: HTMLElement;
   public container: HTMLElement;
-  private data: GanttData;
+  public data: GanttData;
   private config: Required<GanttConfig>;
 
   private headerCanvas: HTMLCanvasElement;
@@ -161,8 +161,8 @@ export class GanttChart {
 
   private init(): void {
     this.buildTaskMap();
-    this.calculateFullTimeline();
     this.updatePixelsPerDay();
+    this.calculateFullTimeline();
     this.setupEvents();
     this.handleResize();
   }
@@ -246,6 +246,9 @@ export class GanttChart {
       maxDate = DateUtils.addDays(new Date(), 60);
     } else {
       this.taskMap.forEach(({ task }) => {
+        if (task.hide) {
+          return;
+        }
         const pStart = new Date(task.planStart!);
         const pEnd = new Date(task.planEnd!);
         if (pStart < minDate) minDate = pStart;
@@ -281,8 +284,8 @@ export class GanttChart {
         break;
       case 'Day':
       default:
-        this.timelineStart = DateUtils.addDays(minDate, -3);
-        this.timelineEnd = DateUtils.addDays(maxDate, 3);
+        this.timelineStart = DateUtils.addDays(minDate, 3);
+        this.timelineEnd = DateUtils.addDays(maxDate, -5);
         break;
     }
   }
@@ -506,7 +509,7 @@ export class GanttChart {
   }
 
   private updateVirtualRanges(): void {
-    const buffer = 200;
+    const buffer = 100;
     this.visibleDateRange = {
       start: this.xToDate(this.scrollLeft - buffer),
       end: this.xToDate(this.scrollLeft + this.viewportWidth + buffer)
@@ -580,11 +583,11 @@ export class GanttChart {
           isValidActualTask = true;
         }
 
-        if (!isValidPlanTask && !isValidActualTask) {
-          return;
-        }
         if (task.actualEnd) {
           x_actual_end = this.dateToX(DateUtils.addDays(task.actualEnd, 1));
+        }
+        if (!isValidPlanTask && !isValidActualTask) {
+          return;
         }
         if (x_actual_start) {
           x_actual_width = (x_actual_end ? x_actual_end : this.dateToX(this.today))! - x_actual_start;

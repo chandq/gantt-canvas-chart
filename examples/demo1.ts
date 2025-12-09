@@ -19,6 +19,7 @@ export function getDemo1Data(): GanttData {
           actualStart: '2025-10-01',
           actualEnd: '2025-10-01',
           leftRemark: '刘玲',
+          hide: true,
           rightRemark: '待开始',
           planOffsetPercent: [0.3, 0.5],
           actualOffsetPercent: [0.3, 0.5],
@@ -97,7 +98,7 @@ export function getDemo1Data(): GanttData {
           name: 'UI/UX 设计',
           planStart: '2025-11-06',
           planEnd: '2025-11-10',
-          actualStart: '2025-11-07',
+          // actualStart: '2025-11-07',
           actualEnd: '2025-11-11',
           dependencies: ['t1'],
           leftRemark: '李四',
@@ -121,6 +122,7 @@ export function getDemo1Data(): GanttData {
     {
       id: 'proj3',
       name: '开发阶段',
+      hide: true,
       tasks: [
         {
           id: 't3',
