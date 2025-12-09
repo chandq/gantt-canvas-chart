@@ -2,7 +2,7 @@
 export interface Task {
   id: string;
   name: string;
-  type?: 'task' | 'leave';
+  type?: 'task' | 'leave' | 'overtime' | string;
   planStart?: string; // Plan start date, date separated by '/'
   planEnd?: string;
   actualStart?: string;
@@ -14,6 +14,7 @@ export interface Task {
   styleClass?: string;
   planBorderColor?: string;
   actualBgColor?: string;
+  hide?: boolean; // 是否隐藏该数据，默认false
   _data?: any;  // 存放自定义的数据
   planOffsetPercent?: [number, number]; // 根据[起始坐标偏移百分比，显示进度百分比]绘制按日展示时任务进度（计划）
   actualOffsetPercent?: [number, number]; // 根据[起始坐标偏移百分比，显示进度百分比]绘制按日展示时任务进度（实际）
@@ -23,6 +24,7 @@ export interface Task {
 export interface Row {
   id: string;
   name: string;
+  hide?: boolean;
   tasks: Task[];
 }
 

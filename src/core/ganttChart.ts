@@ -540,9 +540,16 @@ export class GanttChart {
   private calculateAllTaskPositions(): void {
     this.taskPositions.clear();
     for (let i = 0; i < this.data.length; i++) {
+
       const row = this.data[i];
+      if (row.hide) {
+        continue;
+      }
       const y = i * this.config.rowHeight;
       row.tasks.forEach(task => {
+        if (task.hide) {
+          return;
+        }
 
         const x_plan_start = this.dateToX(new Date(task.planStart!));
         const x_plan_end = this.dateToX(DateUtils.addDays(task.planEnd!, 1));
