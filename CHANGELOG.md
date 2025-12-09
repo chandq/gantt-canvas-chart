@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.4.0...v1.5.0) (2025-12-09)
+
+
+### Features
+
+* add hide conf ([f90dc6a](https://github.com/chandq/gantt-canvas-chart/commit/f90dc6afa165eb96b4d2e738a2bd09dd5b6170b8))
+
+
+### Bug Fixes
+
+* optimize ui ([9dc8330](https://github.com/chandq/gantt-canvas-chart/commit/9dc83303b85cb69556a4b9669cf3fced50123f9f))
+
 ## [1.4.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.3.1...v1.4.0) (2025-12-08)
 
 
