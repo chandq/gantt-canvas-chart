@@ -216,8 +216,8 @@ export class GanttChart {
   public updateConfig(newConfig: GanttConfig): void {
     Object.assign(this.config, newConfig);
     if (newConfig.viewMode) {
-      this.container.scrollLeft = 0;
-      this.scrollLeft = 0;
+      this.container.scrollLeft = this.config.scrollEdgeThresholds + 2;
+      this.scrollLeft = this.config.scrollEdgeThresholds + 2;
       this.updatePixelsPerDay();
       this.calculateFullTimeline();
     }
@@ -1156,11 +1156,11 @@ export class GanttChart {
     ctx.fillStyle = '#000';
     if (this.config.showLeftRemark && task.leftRemark) {
       ctx.textAlign = 'right';
-      ctx.fillText(task.leftRemark, Math.round(Math.min(...[pos.offset_x_plan_start, pos.offset_x_actual_start].filter(val => val !== null && val !== undefined)) - 8), Math.round(textY));
+      ctx.fillText(task.leftRemark, Math.round(Math.min(...[pos.offset_x_plan_start, pos.offset_x_actual_start].filter(val => val !== null && val !== undefined)) - 8 * 2), Math.round(textY));
     }
     if (this.config.showRightRemark && task.rightRemark) {
       ctx.textAlign = 'left';
-      ctx.fillText(task.rightRemark, Math.round(Math.max(...[pos.offset_x_plan_end, pos.offset_x_actual_end].filter(val => val !== null && val !== undefined)) + 8), Math.round(textY));
+      ctx.fillText(task.rightRemark, Math.round(Math.max(...[pos.offset_x_plan_end, pos.offset_x_actual_end].filter(val => val !== null && val !== undefined)) + 8 * 2), Math.round(textY));
     }
     if (this.config.showCenterRemark && task.centerRemark) {
       const centerX = pos.offset_x_actual_start! + (pos.offset_x_actual_end! - pos.offset_x_actual_start!) / 2;
@@ -1291,7 +1291,7 @@ export class GanttChart {
     const startDate = date ? date : this.minDate;
     if (startDate) {
       const xPosition = this.dateToX(startDate);
-      this.container.scrollTo({ left: xPosition - 80, });
+      this.container.scrollTo({ left: Math.max(this.config.scrollEdgeThresholds + 2, xPosition - 80), });
     }
   }
 
@@ -1305,7 +1305,7 @@ export class GanttChart {
 
       const rowIndex = params.rowIndex ? params.rowIndex : this.data.findIndex(row => row.id === params.rowId);
       const yPosition = this.config.rowHeight * rowIndex;
-      this.container.scrollTo({ top: yPosition - 80, });
+      this.container.scrollTo({ top: Math.max(this.config.scrollEdgeThresholds + 2, yPosition - 80), });
     }
   }
 
