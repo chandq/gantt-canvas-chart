@@ -7,7 +7,24 @@ import type {
   Task
 } from './types';
 import { firstValidValue } from './utils';
-
+/**
+ * GanttChart Class
+ *
+ * Core Features:
+ * 1. Virtual Rendering: Only renders tasks visible in the current viewport for performance optimization
+ * 2. Dynamic Scrolling: Supports both horizontal and vertical scrolling with virtualized data loading
+ * 3. Dual Timeline Display: Shows both planned and actual timelines for tasks
+ * 4. Data Validation Handling:
+ *    - Automatically handles invalid data where start dates are after end dates by skipping rendering
+ *    - For tasks with only actual start time (no end time), automatically extends visualization to today
+ *    - Filters out tasks with completely invalid date ranges
+ * 5. Dependency Visualization: Draws arrows between dependent tasks with smart routing
+ * 6. Infinite Scroll Loading: Supports dynamic data loading when scrolling to edges
+ * 7. Responsive Design: Adapts to container size changes using ResizeObserver
+ * 8. Tooltip System: Provides detailed information on hover with customizable formatting
+ * 9. Multiple View Modes: Supports Day/Week/Month/Year views with appropriate scaling
+ * 10. Custom Styling: Allows per-task styling through configuration options
+ */
 export class GanttChart {
   private rootContainer: HTMLElement;
   public container: HTMLElement;
@@ -42,7 +59,7 @@ export class GanttChart {
   private resizeObserver: ResizeObserver | null;
 
   private taskPositions: Map<string, TaskPosition>;
-  private taskMap: Map<string, { row: number; task: Task }>;
+  public taskMap: Map<string, { row: number; task: Task }>;
 
   private isLoadingData: boolean = false;
   private hasMoreDataLeft: boolean = true;
@@ -570,30 +587,26 @@ export class GanttChart {
         const [offsetX_actual, percent_actual] = this.config.viewMode === 'Day' && task.actualOffsetPercent ? task.actualOffsetPercent : [0, 1];
         const [offsetX, percent_plan] = this.config.viewMode === 'Day' && task.planOffsetPercent ? task.planOffsetPercent : [0, 1];
 
-
         if (x_plan_start && x_plan_end && x_plan_start < x_plan_end) {
           x_plan_width = x_plan_end - x_plan_start;
           offset_x_plan_start = x_plan_start + x_plan_width * offsetX;
           x_plan_end && (offset_x_plan_end = offset_x_plan_start + x_plan_width * percent_plan);
           isValidPlanTask = true;
         }
+        x_actual_start = this.dateToX(new Date(task.actualStart!));
+        x_actual_end = this.dateToX(DateUtils.addDays(task.actualEnd ? task.actualEnd : this.today, 1))
 
-        if (task.actualStart) {
-          x_actual_start = this.dateToX(new Date(task.actualStart));
+        if (x_actual_start && x_actual_end && x_actual_start < x_actual_end) {
+          x_actual_width = x_actual_end! - x_actual_start;
+          offset_x_actual_start = Math.round(x_actual_start + x_actual_width * offsetX_actual);
+          offset_x_actual_end = offset_x_actual_start + x_actual_width * percent_actual;
           isValidActualTask = true;
         }
 
-        if (task.actualEnd) {
-          x_actual_end = this.dateToX(DateUtils.addDays(task.actualEnd, 1));
-        }
         if (!isValidPlanTask && !isValidActualTask) {
           return;
         }
-        if (x_actual_start) {
-          x_actual_width = (x_actual_end ? x_actual_end : this.dateToX(this.today))! - x_actual_start;
-          offset_x_actual_start = Math.round(x_actual_start + x_actual_width * offsetX_actual);
-          x_actual_end && (offset_x_actual_end = offset_x_actual_start + x_actual_width * percent_actual);
-        }
+
         this.taskPositions.set(task.id, {
           x_plan_start,
           x_plan_end,
@@ -1004,14 +1017,13 @@ export class GanttChart {
         const pos = this.taskPositions.get(task.id);
         if (!pos) return;
 
-        if (pos.x_plan_end < this.scrollLeft || pos.x_plan_start > this.scrollLeft + this.viewportWidth) {
-          if (
-            !pos.x_actual_start ||
-            pos.x_actual_end! < this.scrollLeft ||
-            pos.x_actual_start > this.scrollLeft + this.viewportWidth
-          )
-            return;
-        }
+        // Fixed logic: render task if either plan or actual is visible
+        const isPlanVisible = pos.x_plan_end >= this.scrollLeft && pos.x_plan_start <= this.scrollLeft + this.viewportWidth;
+        const isActualVisible = pos.x_actual_start && pos.x_actual_end &&
+          pos.x_actual_end >= this.scrollLeft && pos.x_actual_start <= this.scrollLeft + this.viewportWidth;
+
+        // Render if at least one of plan or actual is visible
+        if (!isPlanVisible && !isActualVisible) return;
         this.drawTask(ctx, task, y, pos);
       });
     }
@@ -1106,7 +1118,7 @@ export class GanttChart {
   }
 
   private drawToday(ctx: CanvasRenderingContext2D): void {
-    const x = this.dateToX(this.today);
+    const x = this.dateToX(DateUtils.addDays(this.today, 1));
     if (x >= this.scrollLeft && x <= this.scrollLeft + this.viewportWidth) {
       ctx.strokeStyle = this.config.todayColor;
       ctx.lineWidth = 1;
