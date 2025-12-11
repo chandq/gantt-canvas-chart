@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.0...v1.5.1) (2025-12-11)
+
+
+### Bug Fixes
+
+* handle invalid data where start dates are after end dates by skipping rendering ([2a40ebc](https://github.com/chandq/gantt-canvas-chart/commit/2a40ebc50fc3f239c1735b592b0e52ec68a7c73f))
+* improve interface display ([81180e6](https://github.com/chandq/gantt-canvas-chart/commit/81180e6fdf8136a64a575b4bbc5598d7600239e0))
+
 ## [1.5.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.4.0...v1.5.0) (2025-12-09)
 
 
