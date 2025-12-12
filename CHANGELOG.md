@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.3](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.2...v1.5.3) (2025-12-12)
+
+
+### Bug Fixes
+
+* improve row hide capability for hide total row ([fe88bb5](https://github.com/chandq/gantt-canvas-chart/commit/fe88bb5ff832d1cd05ec4c51422dc645dd872a7a))
+
 ### [1.5.2](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.1...v1.5.2) (2025-12-12)
 
 
