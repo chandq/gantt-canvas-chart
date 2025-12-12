@@ -64,8 +64,8 @@ export interface TaskPosition {
   x_actual_end: number | null;
   x_plan_width: number;
   x_actual_width: number;
-  offset_x_plan_start: number;  // real x_plan_start with offsetPercent
-  offset_x_plan_end: number;  // real x_plan_end with offsetPercent
+  offset_x_plan_start: number | null;  // real x_plan_start with offsetPercent
+  offset_x_plan_end: number | null;  // real x_plan_end with offsetPercent
   offset_x_actual_start: number | null;   // real x_actual_start with offsetPercent
   offset_x_actual_end: number | null;   // real x_actual_end with offsetPercent
   y: number;
