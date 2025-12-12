@@ -70,3 +70,23 @@ export function getMinMaxOptimized(values: any[]): { min: number; max: number } 
 
   return hasValidValue ? { min, max } : null;
 }
+
+/**
+ * 将日期转换为一天的开始时间，即0点0分0秒0毫秒
+ * @param {Date} value
+ * @returns {Date}
+ */
+export function dateToStart(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+}
+
+/**
+ * 将日期转换为一天的结束时间，即23点59分59秒999毫秒
+ * @param {Date} value
+ * @returns {Date}
+ */
+export function dateToEnd(value: Date): Date {
+  const d = dateToStart(value);
+  d.setDate(d.getDate() + 1);
+  return new Date(d.getTime() - 1);
+}

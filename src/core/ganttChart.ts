@@ -6,7 +6,7 @@ import type {
   VisibleDateRange,
   Task
 } from './types';
-import { firstValidValue, getMinMax } from './utils';
+import { dateToEnd, dateToStart, firstValidValue, getMinMax } from './utils';
 /**
  * GanttChart Class
  *
@@ -1214,13 +1214,10 @@ export class GanttChart {
       this.tooltip.innerHTML = htmlStr;
     } else {
       const overlappingTasks = row.tasks.filter(task => {
-        const pStart = new Date(task.planStart!).setHours(0, 0, 0, 0),
-          pEnd = DateUtils.addDays(task.planEnd!, 1);
-        if ((date as any) >= pStart && date < pEnd) return true;
+        if (task.planStart && task.planEnd && date > dateToStart(new Date(task.planStart)) && date <= dateToEnd(new Date(task.planEnd))) return true;
         if (task.actualStart) {
-          const aStart = new Date(task.actualStart).setHours(0, 0, 0, 0),
-            aEnd = DateUtils.addDays(task.actualEnd!, 1);
-          if (date as any >= aStart && date < aEnd) return true;
+          const aEnd = task.actualEnd ? new Date(task.actualEnd) : this.today;
+          if (date >= dateToStart(new Date(task.actualStart)) && date <= dateToEnd(aEnd)) return true;
         }
         return false;
       });
