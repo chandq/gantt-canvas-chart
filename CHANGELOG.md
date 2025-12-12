@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.2](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.1...v1.5.2) (2025-12-12)
+
+
+### Bug Fixes
+
+* filter invalid position coordinates when draw remark ([fb84742](https://github.com/chandq/gantt-canvas-chart/commit/fb847425be63c3ccc6bbaef0322fe3ff93e1ba3d))
+* improve default tooltipFormat func ([d12ccaf](https://github.com/chandq/gantt-canvas-chart/commit/d12ccafcc0eb93e064781f8c857d8e949645de22))
+
 ### [1.5.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.0...v1.5.1) (2025-12-11)
 
 
