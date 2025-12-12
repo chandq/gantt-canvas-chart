@@ -71,8 +71,9 @@ export class GanttChart {
   private scrollLoadTimer: number | null = null;
 
   constructor(rootContainer: HTMLElement, data: GanttData, config: GanttConfig = {}) {
-
-    if (rootContainer.querySelector('.__gantt-chart-container')) {
+    if (!rootContainer) {
+      throw new Error('Root container element is required');
+    } else if (rootContainer.querySelector('.__gantt-chart-container')) {
       throw new Error('GanttChart already exists in this container');
     }
 
@@ -171,7 +172,6 @@ export class GanttChart {
     this.verticalScrollTo = this.verticalScrollTo.bind(this);
     this.handleResize = this.handleResize.bind(this);
 
-
     this.init();
   }
 
@@ -192,8 +192,22 @@ export class GanttChart {
 
   private buildTaskMap(): void {
     this.taskMap.clear();
+    // Track visible rows only
+    let visibleRowIndex = 0;
+
     this.data.forEach((row, rowIndex) => {
-      row.tasks.forEach(task => this.taskMap.set(task.id, { row: rowIndex, task }));
+      // Still add tasks to taskMap even if row is hidden, but track correct visible row index
+      row.tasks.forEach(task => {
+        this.taskMap.set(task.id, {
+          row: row.hide ? -1 : visibleRowIndex, // Use -1 for hidden rows
+          task
+        });
+      });
+
+      // Only increment visible row index for non-hidden rows
+      if (!row.hide) {
+        visibleRowIndex++;
+      }
     });
   }
 
@@ -533,10 +547,13 @@ export class GanttChart {
     };
   }
 
+  // Update the updateDimensions method to calculate height based on visible rows
   private updateDimensions(): void {
     const totalDays = DateUtils.diffDays(this.timelineStart, this.timelineEnd) + 1;
+    // Count only visible rows for height calculation
+    const visibleRowCount = this.data.filter(row => !row.hide).length;
     const newTotalWidth = totalDays * this.pixelsPerDay;
-    const newTotalHeight = this.data.length * this.config.rowHeight + this.config.headerHeight;
+    const newTotalHeight = visibleRowCount * this.config.rowHeight + this.config.headerHeight;
 
     // Only update if changed
     if (this.totalWidth !== newTotalWidth || this.totalHeight !== newTotalHeight) {
@@ -559,13 +576,15 @@ export class GanttChart {
 
   private calculateAllTaskPositions(): void {
     this.taskPositions.clear();
-    for (let i = 0; i < this.data.length; i++) {
+    // Track visible rows only
+    let visibleRowIndex = 0;
+    for (let i = 0, len = this.data.length; i < len; i++) {
 
       const row = this.data[i];
       if (row.hide) {
         continue;
       }
-      const y = i * this.config.rowHeight;
+      const y = visibleRowIndex * this.config.rowHeight;
       row.tasks.forEach(task => {
         if (task.hide) {
           return;
@@ -619,9 +638,11 @@ export class GanttChart {
           x_plan_width,
           x_actual_width,
           y: y + this.config.rowHeight * 0.5,
-          row: i
+          row: visibleRowIndex // Use visible row index instead of original index
         });
       });
+      // Increment visible row index only for non-hidden rows
+      visibleRowIndex++;
     }
   }
 
@@ -1007,11 +1028,24 @@ export class GanttChart {
     ctx.textRendering = 'optimizeSpeed';
     ctx.imageSmoothingEnabled = false;
 
+    // Track visible rows for proper positioning
+    let visibleRowIndex = 0;
+
     for (let i = 0; i < this.data.length; i++) {
       const row = this.data[i];
-      const y = i * this.config.rowHeight;
 
-      if (y + this.config.rowHeight < this.scrollTop || y > this.scrollTop + this.viewportHeight) continue;
+      // Skip hidden rows
+      if (row.hide) {
+        continue;
+      }
+
+      const y = visibleRowIndex * this.config.rowHeight;
+
+      // Only draw if row is within visible viewport
+      if (y + this.config.rowHeight < this.scrollTop || y > this.scrollTop + this.viewportHeight) {
+        visibleRowIndex++;
+        continue;
+      }
 
       row.tasks.forEach(task => {
         const pos = this.taskPositions.get(task.id);
@@ -1026,16 +1060,28 @@ export class GanttChart {
         if (!isPlanVisible && !isActualVisible) return;
         this.drawTask(ctx, task, y, pos);
       });
+
+      visibleRowIndex++;
     }
   }
 
+  // In the drawGrid method
   private drawGrid(ctx: CanvasRenderingContext2D, startDate: Date, endDate: Date): void {
     ctx.strokeStyle = '#e6e6e6';
     ctx.lineWidth = 1;
     ctx.beginPath();
 
     if (this.config.showRowLines) {
-      for (let i = 0; i <= this.data.length; i++) {
+      // Count visible rows to determine how many grid lines to draw
+      let visibleRowCount = 0;
+      for (let i = 0; i < this.data.length; i++) {
+        if (!this.data[i].hide) {
+          visibleRowCount++;
+        }
+      }
+
+      // Draw grid lines based on visible rows only
+      for (let i = 0; i <= visibleRowCount; i++) {
         const y = i * this.config.rowHeight;
         if (y < this.scrollTop || y > this.scrollTop + this.viewportHeight) continue;
         ctx.moveTo(this.scrollLeft, y);
@@ -1043,6 +1089,7 @@ export class GanttChart {
       }
     }
 
+    // Column drawing remains unchanged
     if (this.config.showColLines) {
       let currentDate = startDate;
       switch (this.config.viewMode) {
@@ -1199,11 +1246,27 @@ export class GanttChart {
     const mouseY = e.clientY - rect.top;
     const chartX = mouseX + this.scrollLeft;
     const chartY = mouseY + this.scrollTop;
-    const rowIndex = Math.floor(chartY / this.config.rowHeight);
+    // Calculate visible row index based on Y position
+    const visibleRowIndex = Math.floor(chartY / this.config.rowHeight);
+
+    // Need to map visible row index to actual data index
+    let actualRowIndex = -1;
+    let visibleRowCount = 0;
+
+    for (let i = 0; i < this.data.length; i++) {
+      if (!this.data[i].hide) {
+        if (visibleRowCount === visibleRowIndex) {
+          actualRowIndex = i;
+          break;
+        }
+        visibleRowCount++;
+      }
+    }
+
     const date = this.xToDate(chartX);
 
-    if (rowIndex < 0 || rowIndex >= this.data.length) return this.handleMouseLeave();
-    const row = this.data[rowIndex];
+    if (actualRowIndex < 0 || actualRowIndex >= this.data.length) return this.handleMouseLeave();
+    const row = this.data[actualRowIndex];
 
     if (this.config.tooltipFormat) {
       const htmlStr = this.config.tooltipFormat(row, date, this.config);
