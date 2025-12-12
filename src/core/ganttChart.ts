@@ -195,7 +195,7 @@ export class GanttChart {
     // Track visible rows only
     let visibleRowIndex = 0;
 
-    this.data.forEach((row, rowIndex) => {
+    this.data.forEach((row,) => {
       // Still add tasks to taskMap even if row is hidden, but track correct visible row index
       row.tasks.forEach(task => {
         this.taskMap.set(task.id, {
