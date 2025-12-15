@@ -4,7 +4,8 @@
   overflow: hidden;
   position: relative;
   background: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: Roboto, PingFang SC, Noto Sans SC, Microsoft YaHei UI, Microsoft YaHei, Segoe UI, Helvetica Neue,
+    Helvetica, Arial, sans-serif;
 }
 
 .__gantt-chart-container {
@@ -13,7 +14,8 @@
   position: relative;
   background: #ffffff;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: Roboto, PingFang SC, Noto Sans SC, Microsoft YaHei UI, Microsoft YaHei, Segoe UI, Helvetica Neue,
+    Helvetica, Arial, sans-serif;
 }
 
 .__gantt-scroll-dummy {

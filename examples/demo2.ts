@@ -71,6 +71,14 @@ export function getDemo2Data(): GanttData {
           actualStart: '2025-11-13',
           actualEnd: '2025-11-13',
           styleClass: 'demo2-leave'
+        },
+        {
+          id: 'u2-2_leave',
+          name: '事假',
+          type: 'leave',
+          actualStart: '2025-11-14',
+          actualEnd: '2025-11-14',
+          styleClass: 'demo2-leave'
         }
       ]
     },

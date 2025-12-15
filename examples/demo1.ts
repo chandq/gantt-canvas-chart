@@ -9,18 +9,21 @@ export function getDemo1Data(): GanttData {
     {
       id: 'proj0',
       name: '项目总览',
+      hide: true,
       tasks: [
         {
           id: 't000',
           name: '项目需求背景编写',
 
-          planStart: '2025-10-01',
-          planEnd: '2025-10-01',
-          actualStart: '2025-10-01',
-          actualEnd: '2025-10-01',
+          planStart: '2025-12-01',
+          planEnd: '2025-12-01',
+          // actualStart: '2025-10-01',
+          actualStart: '2025-12-11',
+          // actualEnd: '2025-10-01',
           leftRemark: '刘玲',
           hide: true,
           rightRemark: '待开始',
+          actualBgColor: '#4984ec',
           planOffsetPercent: [0.3, 0.5],
           actualOffsetPercent: [0.3, 0.5],
           // styleClass: 'demo1-task'
@@ -51,6 +54,7 @@ export function getDemo1Data(): GanttData {
           actualEnd: '2025-11-01',
           actualBgColor: '#FFEDB0',
           centerRemark: '请假',
+          hide: true,
           // leftRemark: '张三',
           // rightRemark: '已完成',
           actualOffsetPercent: [0.2, 0.5],
@@ -86,12 +90,24 @@ export function getDemo1Data(): GanttData {
           leftRemark: '张三',
           rightRemark: '已完成',
           styleClass: 'demo1-task'
+        },
+        {
+          id: 't111',
+          name: '需求分析2',
+          planStart: '2025-11-01 09:00:00',
+          planEnd: '2025-11-05 05:00:00',
+          actualStart: '2025-11-05',
+          actualEnd: '2025-11-05',
+          leftRemark: '张三',
+          rightRemark: '已完成',
+          styleClass: 'demo1-task'
         }
       ]
     },
     {
       id: 'proj2',
       name: '设计阶段',
+      // hide: true,
       tasks: [
         {
           id: 't2',
@@ -122,7 +138,7 @@ export function getDemo1Data(): GanttData {
     {
       id: 'proj3',
       name: '开发阶段',
-      hide: true,
+      // hide: true,
       tasks: [
         {
           id: 't3',

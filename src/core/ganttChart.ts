@@ -123,6 +123,7 @@ export class GanttChart {
       offsetTop: 0,
       offsetLeft: 0,
       scrollEdgeThresholds: 10,
+      xGap: 0,
       enabledLoadMore: [],
       viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
 
@@ -571,9 +572,18 @@ export class GanttChart {
     canvas.style.height = `${height}px`;
     const ctx = canvas.getContext('2d')!;
     ctx.scale(this.devicePixelRatio, this.devicePixelRatio);
+    // 关键：Windows上文字渲染优化
+    ctx.textBaseline = 'middle';
+    ctx.imageSmoothingEnabled = false;
     return ctx
   }
-
+  /**
+   * 辅助函数：像素对齐(确保MAC/Windows等不同设备上1px线条清晰)
+   * 用于 1px 线条，使其落在 x.5 位置，填满一个物理像素，避免模糊
+   */
+  snap(val: number) {
+    return Math.floor(val) + 0.5;
+  }
   private calculateAllTaskPositions(): void {
     this.taskPositions.clear();
     // Track visible rows only
@@ -680,10 +690,10 @@ export class GanttChart {
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.save();
-    ctx.translate(-this.scrollLeft, 0);
+    ctx.translate(-Math.round(this.scrollLeft), 0);
 
     ctx.fillStyle = this.config.headerBgColor;
-    ctx.fillRect(this.scrollLeft, 0, this.viewportWidth, h);
+    ctx.fillRect(Math.round(this.scrollLeft), 0, this.viewportWidth, h);
 
     ctx.textBaseline = 'middle';
     ctx.textRendering = 'optimizeLegibility';
@@ -780,7 +790,7 @@ export class GanttChart {
 
     // Render year/month headers that span across multiple units
     ctx.fillStyle = '#333';
-    ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+    ctx.font = 'bold 14px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
     ctx.textAlign = 'left';
 
     groupedBlocks.forEach(group => {
@@ -791,17 +801,17 @@ export class GanttChart {
       if (visibleEnd > visibleStart) {
         // Draw background for the header area
         ctx.fillStyle = this.config.headerBgColor;
-        ctx.fillRect(visibleStart, 0, visibleEnd - visibleStart, h * 0.5);
+        ctx.fillRect(Math.round(visibleStart), 0, Math.round(visibleEnd - visibleStart), Math.round(h * 0.5));
 
         // Draw the year/month text
         ctx.fillStyle = '#333';
-        ctx.fillText(group.text, visibleStart + 5, group.yPos);
+        ctx.fillText(group.text, Math.round(visibleStart + 5), Math.round(group.yPos));
       }
     });
 
     // Render lower text and grid lines
     while (currentDateForLower <= this.visibleDateRange.end) {
-      const x = this.dateToX(currentDateForLower);
+      const x = this.snap(this.dateToX(currentDateForLower));
       let lowerText = '';
       let nextDate: Date;
 
@@ -840,7 +850,7 @@ export class GanttChart {
 
       // Render lower text
       ctx.fillStyle = '#000412';
-      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+      ctx.font = '14px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(lowerText, Math.round(x + unitWidth / 2), Math.round(h * 0.7));
 
@@ -857,13 +867,6 @@ export class GanttChart {
         currentDateForLower = nextDate;
       }
     }
-
-    // Draw bottom border
-    ctx.beginPath();
-    ctx.moveTo(this.scrollLeft, h - 0.5);
-    ctx.lineTo(this.scrollLeft + this.viewportWidth, h - 0.5);
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.stroke();
 
     ctx.restore();
   }
@@ -897,7 +900,7 @@ export class GanttChart {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.save();
 
-    ctx.translate(-this.scrollLeft, -this.scrollTop);
+    ctx.translate(-Math.round(this.scrollLeft), -Math.round(this.scrollTop));
 
     const { start: startDate, end: endDate } = this.visibleDateRange;
 
@@ -1024,7 +1027,7 @@ export class GanttChart {
 
   private drawAllTasks(ctx: CanvasRenderingContext2D): void {
     ctx.textBaseline = 'middle';
-    ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+    ctx.font = '12px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif'; // 确保使用系统字体;
     ctx.textRendering = 'optimizeSpeed';
     ctx.imageSmoothingEnabled = false;
 
@@ -1084,8 +1087,9 @@ export class GanttChart {
       for (let i = 0; i <= visibleRowCount; i++) {
         const y = i * this.config.rowHeight;
         if (y < this.scrollTop || y > this.scrollTop + this.viewportHeight) continue;
-        ctx.moveTo(this.scrollLeft, y);
-        ctx.lineTo(this.scrollLeft + this.viewportWidth, y);
+        const sharpY = this.snap(y);
+        ctx.moveTo(this.scrollLeft, sharpY);
+        ctx.lineTo(this.scrollLeft + this.viewportWidth, sharpY);
       }
     }
 
@@ -1132,7 +1136,7 @@ export class GanttChart {
       }
 
       while (currentDate <= endDate) {
-        const x = this.dateToX(currentDate);
+        const x = this.snap(this.dateToX(currentDate));
         ctx.moveTo(x, this.scrollTop);
         ctx.lineTo(x, this.scrollTop + this.viewportHeight);
 
@@ -1188,15 +1192,15 @@ export class GanttChart {
     // const x_today = this.dateToX(this.today);
     if (this.config.showActual && pos.x_actual_start) {
       ctx.fillStyle = task.actualBgColor ? task.actualBgColor : this.config.actualBgColor;
-      ctx.fillRect(pos.offset_x_actual_start!, Math.round(taskY + 2), Math.round(pos.x_actual_width * percent_actual), Math.round(taskHeight - 2));
+      ctx.fillRect(pos.offset_x_actual_start! + this.config.xGap, Math.round(taskY + 2), Math.round(pos.x_actual_width * percent_actual - this.config.xGap), Math.round(taskHeight - 2));
     }
 
     if (this.config.showPlan && pos.x_plan_start && pos.x_plan_end) {
       ctx.strokeStyle = task.planBorderColor ? task.planBorderColor : this.config.planBorderColor;
       ctx.lineWidth = 4;
       ctx.beginPath();
-      ctx.moveTo(pos.offset_x_plan_start! + offset / 2, taskY);
-      ctx.lineTo(pos.offset_x_plan_end! - offset / 2, taskY);
+      ctx.moveTo(pos.offset_x_plan_start! + offset / 2 + this.config.xGap, taskY);
+      ctx.lineTo(pos.offset_x_plan_end! - offset / 2 - this.config.xGap, taskY);
       ctx.stroke();
     }
 
