@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.4](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.3...v1.5.4) (2025-12-15)
+
+
+### Bug Fixes
+
+* solved problem of unclear lines, add xGap config ([78a965c](https://github.com/chandq/gantt-canvas-chart/commit/78a965c3b3bd261f9f551009b2a0729970529d67))
+
 ### [1.5.3](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.2...v1.5.3) (2025-12-12)
 
 
