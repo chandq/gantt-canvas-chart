@@ -120,6 +120,7 @@ export class GanttChart {
       tooltipFormat: null,
       tooltipColor: 'black',
       todayColor: '#ff4d4f',
+      weekendBgColor: '#f7f7f7',
       offsetTop: 0,
       offsetLeft: 0,
       scrollEdgeThresholds: 10,
@@ -850,6 +851,7 @@ export class GanttChart {
 
       // Render lower text
       ctx.fillStyle = '#000412';
+      // ctx.fillStyle = ['2025-11-03', '2025-11-05'].includes(DateUtils.format(nextDate, 'yyyy-MM-dd')) ? 'red' : '#000412';
       ctx.font = '14px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(lowerText, Math.round(x + unitWidth / 2), Math.round(h * 0.7));
@@ -1112,6 +1114,7 @@ export class GanttChart {
       }
 
       let nextDate: Date;
+      // 将绘制纵向分隔线的日期切换到可视区域
       while (this.dateToX(currentDate) < this.scrollLeft - this.pixelsPerDay * 7) {
         switch (this.config.viewMode) {
           case 'Day':
@@ -1139,6 +1142,14 @@ export class GanttChart {
         const x = this.snap(this.dateToX(currentDate));
         ctx.moveTo(x, this.scrollTop);
         ctx.lineTo(x, this.scrollTop + this.viewportHeight);
+
+        if (this.config.viewMode === 'Day') {
+          if (['六', '日'].includes(DateUtils.format(currentDate, 'W'))) {
+            ctx.fillStyle = this.config.weekendBgColor;
+            ctx.fillRect(x! + 1, this.scrollTop, Math.round(this.pixelsPerDay - 1), Math.round(this.scrollTop + this.viewportHeight));
+
+          }
+        }
 
         switch (this.config.viewMode) {
           case 'Day':
