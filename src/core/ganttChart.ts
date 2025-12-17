@@ -60,6 +60,7 @@ export class GanttChart {
 
   private taskPositions: Map<string, TaskPosition>;
   public taskMap: Map<string, { row: number; task: Task }>;
+  public holidaysMap: Map<string, boolean>;
 
   private isLoadingData: boolean = false;
   private hasMoreDataLeft: boolean = true;
@@ -121,6 +122,8 @@ export class GanttChart {
       tooltipColor: 'black',
       todayColor: '#ff4d4f',
       weekendBgColor: '#f7f7f7',
+      holidays: [],
+      dateSeparator: '/',
       offsetTop: 0,
       offsetLeft: 0,
       scrollEdgeThresholds: 10,
@@ -166,6 +169,7 @@ export class GanttChart {
 
     this.taskPositions = new Map();
     this.taskMap = new Map();
+    this.holidaysMap = new Map();
 
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
@@ -179,6 +183,9 @@ export class GanttChart {
 
 
   private init(): void {
+    if (this.config.holidays.length > 0) {
+      this.buildHolidaysMap()
+    }
     this.buildTaskMap();
     this.updatePixelsPerDay();
     this.calculateFullTimeline();
@@ -237,9 +244,27 @@ export class GanttChart {
       this.updatePixelsPerDay();
       this.calculateFullTimeline();
     }
+    if (this.config.holidays.length !== this.holidaysMap.size) {
+      this.buildHolidaysMap()
+    }
     this.updateLoadMoreConf();
     this.updateDimensions();
     this.render();
+  }
+
+  private buildHolidaysMap(): void {
+    this.holidaysMap.clear();
+    const separator = this.config.dateSeparator;
+    if (this.config.holidays && this.config.holidays.length > 0 && this.config.holidays[0].includes(separator)) {
+      this.config.holidays.forEach(holiday => {
+        this.holidaysMap.set(holiday, true);
+      });
+    } else {
+      this.config.holidays.forEach(holiday => {
+        this.holidaysMap.set(DateUtils.format(new Date(holiday), `yyyy${separator}MM${separator}dd`), true);
+      });
+    }
+
   }
 
   public setData(newData: GanttData, newConfig?: GanttConfig): void {
@@ -572,10 +597,12 @@ export class GanttChart {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     const ctx = canvas.getContext('2d')!;
+
     ctx.scale(this.devicePixelRatio, this.devicePixelRatio);
     // 关键：Windows上文字渲染优化
     ctx.textBaseline = 'middle';
     ctx.imageSmoothingEnabled = false;
+    // ctx.globalAlpha = 0;
     return ctx
   }
   /**
@@ -1072,6 +1099,7 @@ export class GanttChart {
 
   // In the drawGrid method
   private drawGrid(ctx: CanvasRenderingContext2D, startDate: Date, endDate: Date): void {
+    const separator = this.config.dateSeparator;
     ctx.strokeStyle = '#e6e6e6';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -1144,7 +1172,7 @@ export class GanttChart {
         ctx.lineTo(x, this.scrollTop + this.viewportHeight);
 
         if (this.config.viewMode === 'Day') {
-          if (['六', '日'].includes(DateUtils.format(currentDate, 'W'))) {
+          if (['六', '日'].includes(DateUtils.format(currentDate, 'W')) || this.holidaysMap.has(DateUtils.format(currentDate, `yyyy${separator}MM${separator}dd`))) {
             ctx.fillStyle = this.config.weekendBgColor;
             ctx.fillRect(x! + 1, this.scrollTop, Math.round(this.pixelsPerDay - 1), Math.round(this.scrollTop + this.viewportHeight));
 

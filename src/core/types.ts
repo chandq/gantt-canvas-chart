@@ -49,7 +49,9 @@ export interface GanttConfig {
   showTooltip?: boolean;
   tooltipColor?: 'black' | 'white';
   todayColor?: string;
-  weekendBgColor?: string;  // 周末表头背景颜色
+  weekendBgColor?: string;  // 周末、节假日表头背景颜色
+  holidays?: string[]; // 节假日的日期集合，推荐格式yyyy-mm-dd
+  dateSeparator?: string; // GanttData数据中时间日期格式化分隔符，默认'/'
   offsetTop?: number; // tooltip位置的顶部偏移量（嵌入在微前端框架中时，子应用页面元素相对主应用的顶部位置有偏移量）
   offsetLeft?: number; // tooltip位置的左侧偏移量（嵌入在微前端框架中时，子应用页面元素相对主应用的左侧位置有偏移量）
   scrollEdgeThresholds?: number; // 滚动边缘触发加载更多

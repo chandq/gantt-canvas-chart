@@ -10,9 +10,11 @@ export function getDemo2Data(): GanttData {
           id: 'u1_leave',
           name: '年假',
           type: 'leave',
-          actualStart: '2025-11-03',
-          actualEnd: '2025-11-05',
-          styleClass: 'demo2-leave'
+          actualBgColor: '#f9aaa4',
+          actualStart: '2025-11-01',
+          actualEnd: '2025-11-03',
+          styleClass: 'demo2-leave',
+          centerRemark: '年假'
         },
         {
           id: 'u1_task_p1',
@@ -31,6 +33,18 @@ export function getDemo2Data(): GanttData {
           styleClass: 'demo2-completed',
           planStart: '2025-11-13',
           planEnd: '2025-11-16'
+        },
+        {
+          id: 'u1_task_d11',
+          name: '加班',
+          centerRemark: '任务c (加班)',
+          type: 'overtime',
+          actualStart: '2025-11-05',
+          actualEnd: '2025-11-05',
+          actualBgColor: '#fff'
+          // styleClass: 'demo2-completed',
+          // planStart: '2025-05-05',
+          // planEnd: '2025-05-05'
         }
       ]
     },
