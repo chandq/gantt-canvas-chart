@@ -1172,7 +1172,7 @@ export class GanttChart {
         ctx.lineTo(x, this.scrollTop + this.viewportHeight);
 
         if (this.config.viewMode === 'Day') {
-          if (['六', '日'].includes(DateUtils.format(currentDate, 'W')) || this.holidaysMap.has(DateUtils.format(currentDate, `yyyy${separator}MM${separator}dd`))) {
+          if ([0, 6].includes(currentDate.getDay()) || this.holidaysMap.has(DateUtils.format(currentDate, `yyyy${separator}MM${separator}dd`))) {
             ctx.fillStyle = this.config.weekendBgColor;
             ctx.fillRect(x! + 1, this.scrollTop, Math.round(this.pixelsPerDay - 1), Math.round(this.scrollTop + this.viewportHeight));
 
