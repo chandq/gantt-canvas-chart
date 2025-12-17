@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.4...v1.6.0) (2025-12-17)
+
+
+### Features
+
+* add column background color for weekend and holidays ([dbd7354](https://github.com/chandq/gantt-canvas-chart/commit/dbd7354b6fe0fdbb51f4bacbf8307d76bc4765a7))
+* display specified header backgroud color for weekend ([129fe3c](https://github.com/chandq/gantt-canvas-chart/commit/129fe3cb4402f1b2edf2aa1f4ae92e5300cde7e1))
+
+
+### Bug Fixes
+
+* improve judgment logic ([eccad1b](https://github.com/chandq/gantt-canvas-chart/commit/eccad1be9249d529c0c7bedaf933bec1eed1869d))
+
 ### [1.5.4](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.3...v1.5.4) (2025-12-15)
 
 
