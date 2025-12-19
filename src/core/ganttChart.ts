@@ -290,6 +290,8 @@ export class GanttChart {
     this.data = [];
     this.taskMap.clear();
     this.taskPositions.clear();
+    this.holidaysMap.clear();
+    this.config.holidays = [];
     this.container.remove();
     // window.removeEventListener('resize', this.handleResize);
   }
