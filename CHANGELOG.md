@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.0...v1.6.1) (2025-12-20)
+
+
+### Bug Fixes
+
+* avoid use RegExp.$1 ([075c67d](https://github.com/chandq/gantt-canvas-chart/commit/075c67d2c0c439023b709ccc18e333c4fad6702b))
+* improve ui ([ab2eac6](https://github.com/chandq/gantt-canvas-chart/commit/ab2eac612d7d00f6ffd2d8ed988363fe39873d0f))
+
 ## [1.6.0](https://github.com/chandq/gantt-canvas-chart/compare/v1.5.4...v1.6.0) (2025-12-17)
 
 
