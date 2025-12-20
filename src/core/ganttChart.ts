@@ -282,6 +282,7 @@ export class GanttChart {
   public destroy(): void {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
+      this.resizeObserver = null;
     }
     this.container.removeEventListener('scroll', this.handleScroll);
     this.mainCanvas.removeEventListener('mousemove', this.handleMouseMove);
@@ -820,7 +821,7 @@ export class GanttChart {
 
     // Render year/month headers that span across multiple units
     ctx.fillStyle = '#333';
-    ctx.font = 'bold 14px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
+    ctx.font = 'bold 12px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
     ctx.textAlign = 'left';
 
     groupedBlocks.forEach(group => {
@@ -835,7 +836,7 @@ export class GanttChart {
 
         // Draw the year/month text
         ctx.fillStyle = '#333';
-        ctx.fillText(group.text, Math.round(visibleStart + 5), Math.round(group.yPos));
+        ctx.fillText(group.text, Math.round(visibleStart + 5), Math.round(group.yPos - 3));
       }
     });
 
@@ -881,7 +882,7 @@ export class GanttChart {
       // Render lower text
       ctx.fillStyle = '#000412';
       // ctx.fillStyle = ['2025-11-03', '2025-11-05'].includes(DateUtils.format(nextDate, 'yyyy-MM-dd')) ? 'red' : '#000412';
-      ctx.font = '14px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
+      ctx.font = '12px Roboto,PingFang SC,Noto Sans SC,Microsoft YaHei UI,Microsoft YaHei,Segoe UI,Helvetica Neue,Helvetica,Arial,sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(lowerText, Math.round(x + unitWidth / 2), Math.round(h * 0.7));
 
