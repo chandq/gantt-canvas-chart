@@ -46,7 +46,7 @@ npm install gantt-canvas-chart
 Or include directly via CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/gantt-canvas-chart/dist/gantt-chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gantt-canvas-chart/dist/index.umd.js"></script>
 ```
 
 ## Usage Example
@@ -114,4 +114,69 @@ ganttChart.setData(newData);
 
 // Update configuration
 ganttChart.updateConfig({ viewMode: 'Week' });
+```
+
+## Full options list
+
+```typescript
+interface Task {
+  id: string;
+  name: string;
+  type?: 'task' | 'leave' | 'overtime' | string;
+  planStart?: string; // Plan start date, date separated by '/'
+  planEnd?: string;
+  actualStart?: string;
+  actualEnd?: string;
+  dependencies?: string[];
+  leftRemark?: string;
+  rightRemark?: string;
+  centerRemark?: string;
+  styleClass?: string;
+  planBorderColor?: string;
+  actualBgColor?: string;
+  hide?: boolean; // Whether to hide this data, default false
+  _data?: any; // Store custom data
+  planOffsetPercent?: [number, number]; // Draw daily task progress (plan) based on [start coordinate offset percentage, progress percentage]
+  actualOffsetPercent?: [number, number]; // Draw daily task progress (actual) based on [start coordinate offset percentage, progress percentage]
+}
+
+interface Row {
+  id: string;
+  name: string;
+  hide?: boolean; // Whether to hide this row
+  tasks: Task[];
+}
+
+type GanttData = Row[];
+
+type LoadMoreDirection = 'left' | 'right' | 'bottom';
+
+interface GanttConfig {
+  viewMode?: 'Day' | 'Week' | 'Month' | 'Year';
+  planBorderColor?: string;
+  actualBgColor?: string;
+  headerBgColor?: string;
+  rowHeight?: number;
+  headerHeight?: number;
+  showPlan?: boolean;
+  showActual?: boolean;
+  showRowLines?: boolean;
+  showColLines?: boolean;
+  showLeftRemark?: boolean;
+  showRightRemark?: boolean;
+  showCenterRemark?: boolean;
+  showTooltip?: boolean;
+  tooltipColor?: 'black' | 'white';
+  todayColor?: string;
+  weekendBgColor?: string; // Weekend/holiday header background color
+  holidays?: string[]; // Collection of holiday dates, recommended format yyyy/MM/dd
+  dateSeparator?: string; // Date format separator in GanttData, default '/'
+  offsetTop?: number; // Tooltip position top offset (when embedded in micro frontend framework, child app page elements have offset relative to main app)
+  offsetLeft?: number; // Tooltip position left offset (when embedded in micro frontend framework, child app page elements have offset relative to main app)
+  scrollEdgeThresholds?: number; // Scroll edge threshold to trigger load more
+  xGap?: number; // Gap between tasks, default 0
+  enabledLoadMore?: [LoadMoreDirection?, LoadMoreDirection?, LoadMoreDirection?];
+  viewFactors?: { Day: number; Week: number; Month: number; Year: number };
+  tooltipFormat?: null | ((task: Row, date: Date, config: GanttConfig) => string);
+}
 ```

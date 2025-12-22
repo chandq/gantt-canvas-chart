@@ -14,17 +14,16 @@ export interface Task {
   styleClass?: string;
   planBorderColor?: string;
   actualBgColor?: string;
-  hide?: boolean; // 是否隐藏该数据，默认false
-  _data?: any;  // 存放自定义的数据
-  planOffsetPercent?: [number, number]; // 根据[起始坐标偏移百分比，显示进度百分比]绘制按日展示时任务进度（计划）
-  actualOffsetPercent?: [number, number]; // 根据[起始坐标偏移百分比，显示进度百分比]绘制按日展示时任务进度（实际）
-
+  hide?: boolean; // Whether to hide this data, default false
+  _data?: any;  // Store custom data
+  planOffsetPercent?: [number, number]; // Draw daily task progress (plan) based on [start coordinate offset percentage, progress percentage]
+  actualOffsetPercent?: [number, number]; // Draw daily task progress (actual) based on [start coordinate offset percentage, progress percentage]
 }
 
 export interface Row {
   id: string;
   name: string;
-  hide?: boolean;
+  hide?: boolean; // Whether to hide this row
   tasks: Task[];
 }
 
@@ -49,13 +48,13 @@ export interface GanttConfig {
   showTooltip?: boolean;
   tooltipColor?: 'black' | 'white';
   todayColor?: string;
-  weekendBgColor?: string;  // 周末、节假日表头背景颜色
-  holidays?: string[]; // 节假日的日期集合，推荐格式yyyy-mm-dd
-  dateSeparator?: string; // GanttData数据中时间日期格式化分隔符，默认'/'
-  offsetTop?: number; // tooltip位置的顶部偏移量（嵌入在微前端框架中时，子应用页面元素相对主应用的顶部位置有偏移量）
-  offsetLeft?: number; // tooltip位置的左侧偏移量（嵌入在微前端框架中时，子应用页面元素相对主应用的左侧位置有偏移量）
-  scrollEdgeThresholds?: number; // 滚动边缘触发加载更多
-  xGap?: number;  // 任务之间的间隔, 默认0
+  weekendBgColor?: string;  // Weekend/holiday header background color
+  holidays?: string[]; // Collection of holiday dates, recommended format yyyy/MM/dd
+  dateSeparator?: string; // Date format separator in GanttData, default '/'
+  offsetTop?: number; // Tooltip position top offset (when embedded in micro frontend framework, child app page elements have offset relative to main app)
+  offsetLeft?: number; // Tooltip position left offset (when embedded in micro frontend framework, child app page elements have offset relative to main app)
+  scrollEdgeThresholds?: number; // Scroll edge threshold to trigger load more
+  xGap?: number;  // Gap between tasks, default 0
   enabledLoadMore?: [LoadMoreDirection?, LoadMoreDirection?, LoadMoreDirection?]
   viewFactors?: { Day: number, Week: number, Month: number, Year: number },
   tooltipFormat?: null | ((task: Row, date: Date, config: GanttConfig) => string);

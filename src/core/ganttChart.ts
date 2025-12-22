@@ -609,9 +609,9 @@ export class GanttChart {
     return ctx
   }
   /**
-   * 辅助函数：像素对齐(确保MAC/Windows等不同设备上1px线条清晰)
-   * 用于 1px 线条，使其落在 x.5 位置，填满一个物理像素，避免模糊
-   */
+    * Helper function: Pixel alignment (ensures 1px lines are crisp on different devices like MAC/Windows)
+    * Used for 1px lines to position them at x.5 coordinates, filling a physical pixel to avoid blurriness
+    */
   snap(val: number) {
     return Math.floor(val) + 0.5;
   }
@@ -1379,9 +1379,9 @@ export class GanttChart {
     this.showTooltip = false;
   }
   /**
-   * 计算任务宽度占的百分比（方便绘制精确到具体时间的每日任务）
-   * @param diffMilliseconds 距离目标日期时间的差异毫秒数
-   * @param pixelsPerDay 每日的像素数
+   * Calculate the percentage width of a task (convenient for drawing daily tasks accurate to specific times)
+   * @param diffMilliseconds The difference in milliseconds from the target date
+   * @param pixelsPerDay Number of pixels per day
    * @returns
    */
   static getTaskWidthPercent(diffMilliseconds: number, pixelsPerDay: number): number {

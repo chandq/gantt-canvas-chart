@@ -8,21 +8,21 @@ export function getDemo1Data(): GanttData {
   return [
     {
       id: 'proj0',
-      name: '项目总览',
+      name: 'Project Overview',
       hide: true,
       tasks: [
         {
           id: 't000',
-          name: '项目需求背景编写',
+          name: 'Project Requirements Documentation',
 
           planStart: '2025-12-01',
           planEnd: '2025-12-01',
           // actualStart: '2025-10-01',
           actualStart: '2025-12-11',
           // actualEnd: '2025-10-01',
-          leftRemark: '刘玲',
+          leftRemark: 'Liu Ling',
           hide: true,
-          rightRemark: '待开始',
+          rightRemark: 'Not Started',
           actualBgColor: '#4984ec',
           planOffsetPercent: [0.3, 0.5],
           actualOffsetPercent: [0.3, 0.5],
@@ -36,8 +36,8 @@ export function getDemo1Data(): GanttData {
           planEnd: '2025-11-05 05:00:00',
           actualStart: '2025-11-01',
           actualEnd: '2025-11-04',
-          leftRemark: '龙扥塞缝森我累得',
-          rightRemark: '已完成',
+          leftRemark: 'Zhang San',
+          rightRemark: 'Completed',
           // planOffsetPercent: [0.1, 0.9]
           planOffsetPercent: [0.3, 0.5],
           actualOffsetPercent: [0.3, 0.5],
@@ -46,30 +46,26 @@ export function getDemo1Data(): GanttData {
         },
         {
           id: 't0L',
-          name: '整体介绍草稿请假',
+          name: 'Overall Introduction Draft',
 
-          // planStart: '2025-11-01 09:00:00',
-          // planEnd: '2025-11-05 05:00:00',
           actualStart: '2025-11-01',
           actualEnd: '2025-11-01',
           actualBgColor: '#FFEDB0',
-          centerRemark: '请假',
+          centerRemark: 'Leave',
           hide: true,
-          // leftRemark: '张三',
-          // rightRemark: '已完成',
+
           actualOffsetPercent: [0.2, 0.5],
-          // styleClass: 'demo1-task'
         },
         {
           id: 't00',
-          name: '整体介绍评审总要',
+          name: 'Overall Introduction Review',
 
           planStart: '2025-11-11 09:00:00',
           planEnd: '2025-11-15 05:00:00',
           actualStart: '2025-11-11',
           actualEnd: '2025-11-14',
-          leftRemark: '张三',
-          rightRemark: '已完成-赛复赛废了龙洞扥塞缝赛飞舞的',
+          leftRemark: 'Zhang San',
+          rightRemark: 'Completed',
           planBorderColor: '#caeed2',
           actualBgColor: '#78c78f',
           // styleClass: 'demo1-task'
@@ -78,17 +74,17 @@ export function getDemo1Data(): GanttData {
     },
     {
       id: 'proj1',
-      name: '项目规划',
+      name: 'Project Planning',
       tasks: [
         {
           id: 't1',
-          name: '需求分析',
+          name: 'Requirements Analysis',
           planStart: '2025-11-01 09:00:00',
           planEnd: '2025-11-05 05:00:00',
           actualStart: '2025-11-01',
           actualEnd: '2025-11-04',
-          leftRemark: '张三',
-          rightRemark: '已完成',
+          leftRemark: 'Zhang San',
+          rightRemark: 'Completed',
           styleClass: 'demo1-task'
         },
         {
