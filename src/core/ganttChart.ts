@@ -118,6 +118,8 @@ export class GanttChart {
       showRightRemark: false,
       showCenterRemark: false,
       showTooltip: true,
+      queryStartDate: null,
+      queryEndDate: null,
       tooltipFormat: null,
       tooltipColor: 'black',
       todayColor: '#ff4d4f',
