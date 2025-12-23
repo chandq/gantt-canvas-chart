@@ -51,6 +51,9 @@ Or include directly via CDN:
 
 ## Usage Example
 
+![Project plan](/assets/project-plan.jpg)
+![Project member tasks](/assets/project-member-task.jpg)
+
 ```typescript
 import { GanttChart } from 'gantt-canvas-chart';
 

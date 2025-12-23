@@ -87,17 +87,17 @@ export function getDemo1Data(): GanttData {
           rightRemark: 'Completed',
           styleClass: 'demo1-task'
         },
-        {
-          id: 't111',
-          name: '需求分析2',
-          planStart: '2025-11-01 09:00:00',
-          planEnd: '2025-11-05 05:00:00',
-          actualStart: '2025-11-05',
-          actualEnd: '2025-11-05',
-          leftRemark: '张三',
-          rightRemark: '已完成',
-          styleClass: 'demo1-task'
-        }
+        // {
+        //   id: 't111',
+        //   name: '需求分析2',
+        //   planStart: '2025-11-01 09:00:00',
+        //   planEnd: '2025-11-05 05:00:00',
+        //   actualStart: '2025-11-05',
+        //   actualEnd: '2025-11-05',
+        //   leftRemark: '张三',
+        //   rightRemark: '已完成',
+        //   styleClass: 'demo1-task'
+        // }
       ]
     },
     {
@@ -117,18 +117,18 @@ export function getDemo1Data(): GanttData {
           rightRemark: '进行中',
           styleClass: 'demo1-task'
         },
-        {
-          id: 't4',
-          name: 'API 设计',
-          planStart: '2025-11-06',
-          planEnd: '2025-11-08',
-          actualStart: '2025-11-06',
-          actualEnd: '2025-11-07',
-          // dependencies: ['t1'],
-          leftRemark: '赵六',
-          rightRemark: '已完成',
-          styleClass: 'demo1-task'
-        }
+        // {
+        //   id: 't4',
+        //   name: 'API 设计',
+        //   planStart: '2025-11-06',
+        //   planEnd: '2025-11-08',
+        //   actualStart: '2025-11-06',
+        //   actualEnd: '2025-11-07',
+        //   // dependencies: ['t1'],
+        //   leftRemark: '赵六',
+        //   rightRemark: '已完成',
+        //   styleClass: 'demo1-task'
+        // }
       ]
     },
     {
