@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.1...v1.6.2) (2025-12-23)
+
+
+### Bug Fixes
+
+* set explicitly start date and end date of gantt timeline ([677abe5](https://github.com/chandq/gantt-canvas-chart/commit/677abe56b85097ffa5a2b32ed4bb5b39d05dbc0a))
+* type check warning ([252de97](https://github.com/chandq/gantt-canvas-chart/commit/252de978f2bd2061bac6a8a6a6544070521645e0))
+
 ### [1.6.1](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.0...v1.6.1) (2025-12-20)
 
 
