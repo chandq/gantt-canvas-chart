@@ -46,6 +46,8 @@ export interface GanttConfig {
   showRightRemark?: boolean;
   showCenterRemark?: boolean;
   showTooltip?: boolean;
+  queryStartDate?: Date;  // Set start date of gantt timeline, default from calculate from the first task
+  queryEndDate?: Date;  // Set end date of gantt timeline, default from calculate from the last task
   tooltipColor?: 'black' | 'white';
   todayColor?: string;
   weekendBgColor?: string;  // Weekend/holiday header background color

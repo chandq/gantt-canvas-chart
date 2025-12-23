@@ -299,12 +299,13 @@ export class GanttChart {
 
   private calculateFullTimeline(): void {
     const currentYear = this.today.getFullYear()
-
     let minDate = new Date(9999, 0, 1);
     let maxDate = new Date(1000, 0, 1);
+    const { queryStartDate, queryEndDate } = this.config
+
     if (this.data.length === 0) {
-      minDate = new Date();
-      maxDate = DateUtils.addDays(new Date(), 60);
+      minDate = queryStartDate ? queryStartDate : new Date();
+      maxDate = DateUtils.addDays(queryEndDate ? queryEndDate : new Date(), 60);
     } else {
       this.taskMap.forEach(({ task }) => {
         if (task.hide) {
@@ -324,6 +325,12 @@ export class GanttChart {
     }
     this.minDate = minDate;
     this.maxDate = maxDate;
+    if (queryStartDate && queryStartDate < minDate) {
+      minDate = queryStartDate
+    }
+    if (queryEndDate && queryEndDate > maxDate) {
+      maxDate = queryEndDate
+    }
     const minYear = minDate.getFullYear();
     const maxYear = maxDate.getFullYear();
     // Add buffer
