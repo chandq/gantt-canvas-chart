@@ -51,6 +51,13 @@ Or include directly via CDN:
 
 ## Usage Example
 
+> Requirements for examples: Node.js version 22.12.+, if you installed nvm, you can execute `nvm use` to switch to the specified version.
+
+```bash
+1. npm run dev
+2. npm run dev:mock # Run mock server for load more
+```
+
 ![Project plan](/assets/project-plan.jpg)
 ![Project member tasks](/assets/project-member-task.jpg)
 
@@ -169,6 +176,8 @@ interface GanttConfig {
   showRightRemark?: boolean;
   showCenterRemark?: boolean;
   showTooltip?: boolean;
+  queryStartDate?: Date | null; // Set start date of gantt timeline, default from calculate from the first task
+  queryEndDate?: Date | null; // Set end date of gantt timeline, default from calculate from the last task
   tooltipColor?: 'black' | 'white';
   todayColor?: string;
   weekendBgColor?: string; // Weekend/holiday header background color
@@ -181,5 +190,20 @@ interface GanttConfig {
   enabledLoadMore?: [LoadMoreDirection?, LoadMoreDirection?, LoadMoreDirection?];
   viewFactors?: { Day: number; Week: number; Month: number; Year: number };
   tooltipFormat?: null | ((task: Row, date: Date, config: GanttConfig) => string);
+}
+
+interface TaskPosition {
+  x_plan_start: number;
+  x_plan_end: number;
+  x_actual_start: number | null;
+  x_actual_end: number | null;
+  x_plan_width: number;
+  x_actual_width: number;
+  offset_x_plan_start: number | null; // real x_plan_start with offsetPercent
+  offset_x_plan_end: number | null; // real x_plan_end with offsetPercent
+  offset_x_actual_start: number | null; // real x_actual_start with offsetPercent
+  offset_x_actual_end: number | null; // real x_actual_end with offsetPercent
+  y: number;
+  row: number;
 }
 ```

@@ -109,8 +109,8 @@ function getDemo1Data(params) {
           actualEnd: getNextDate({ ...params, days: 3 }),
           // dependencies: ['t4'],
           // dependencies: ['t4', `vt_${1}_1`, `vt_${1}_2`, `vt_${2}_2`],
-          leftRemark: '孙七',
-          rightRemark: '已完成',
+          // leftRemark: '孙七',
+          // rightRemark: '已完成',
           styleClass: 'demo1-task'
         }
       ]

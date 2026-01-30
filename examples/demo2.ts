@@ -37,7 +37,7 @@ export function getDemo2Data(): GanttData {
         {
           id: 'u1_task_d11',
           name: '加班',
-          centerRemark: '任务c (加班)',
+          centerRemark: '加班',
           type: 'overtime',
           actualStart: '2025-11-05',
           actualEnd: '2025-11-05',

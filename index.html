@@ -182,7 +182,7 @@
           showLeftRemark: true,
           showRightRemark: true,
           enabledLoadMore: ['left', 'right']
-          // queryStartDate: new Date('2022-01-01')
+          // queryStartDate: new Date('2022-01-01'),
           // queryEndDate: new Date('2027-11-01')
         });
 
@@ -202,6 +202,10 @@
           const data = getDemo1Data();
           // Example usage:
           ganttChart.setOnDataLoadCallback(async (direction, { date }) => {
+            // Only load data when viewMode is Day
+            if (ganttChart.config.viewMode !== 'Day') {
+              return [];
+            }
             // Simulate API call
             const response = await fetch(
               `http://localhost:8090/mock/api/gantt-data?direction=${direction}&date=${
