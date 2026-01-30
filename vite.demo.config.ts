@@ -20,7 +20,7 @@ export default defineConfig({
       input: resolve(__dirname, 'index.html'),
     },
     // Disable minification globally for all builds
-    minify: false
+    // minify: false
   },
   plugins: [banner({
     outDir: resolve(__dirname, './docs'),
