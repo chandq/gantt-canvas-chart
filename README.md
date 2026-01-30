@@ -55,7 +55,7 @@ Or include directly via CDN:
 
 ```bash
 1. npm run dev
-2. npm run dev:mock # Run mock server for load more
+2. npm run dev:mock # if as needs,Run mock server for show load more functions demo
 ```
 
 ![Project plan](/assets/project-plan.jpg)
