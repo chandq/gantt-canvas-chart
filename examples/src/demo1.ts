@@ -1,6 +1,6 @@
-import type { GanttData } from '../src/core/types';
+import type { GanttData } from '../../src/core/types';
 // import { GanttChart } from '../src/core/ganttChart';
-import { DateUtils } from '../src/core/dateUtils';
+import { DateUtils } from '../../src/core/dateUtils';
 
 const currentDay = new Date();
 
