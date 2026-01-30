@@ -4,7 +4,7 @@ name: Deploy Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: [dev]
+    branches: [main]
   pull_request:
     branches: [main]
 
