@@ -1,4 +1,4 @@
-import type { GanttData, Task } from '../src/core/types';
+import type { GanttData, Task } from '../../src/core/types';
 
 export function getDemo2Data(): GanttData {
   return [
