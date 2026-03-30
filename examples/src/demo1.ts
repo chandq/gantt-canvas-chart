@@ -4,12 +4,29 @@ import { DateUtils } from '../../src/core/dateUtils';
 
 const currentDay = new Date();
 
+function getMoreTaskData() {
+  const tasks = new Array(20).fill('').map((v, i) => {
+    return {
+      id: `t0000${i}`,
+      name: `Project Requirements Documentation ${i}`,
+
+      planStart: '2025-11-01',
+      planEnd: '2025-11-03',
+      // actualStart: '2025-10-01',
+      actualStart: '2025-12-11',
+      // actualEnd: '2025-10-01',
+    }
+  });
+  console.log('tasks', tasks);
+  return tasks;
+}
+
 export function getDemo1Data(): GanttData {
   return [
     {
       id: 'proj0',
       name: 'Project Overview',
-      hide: true,
+      // hide: true,
       tasks: [
         {
           id: 't000',
@@ -44,6 +61,7 @@ export function getDemo1Data(): GanttData {
           dependencies: ['t000'],
           // styleClass: 'demo1-task'
         },
+        ...getMoreTaskData(),
         {
           id: 't0L',
           name: 'Overall Introduction Draft',
@@ -87,6 +105,8 @@ export function getDemo1Data(): GanttData {
           rightRemark: 'Completed',
           styleClass: 'demo1-task'
         },
+
+        ...getMoreTaskData(),
         // {
         //   id: 't111',
         //   name: '需求分析2',
