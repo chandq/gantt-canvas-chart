@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.3](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.2...v1.6.3) (2026-03-30)
+
+
+### Bug Fixes
+
+* Fixed [#1](https://github.com/chandq/gantt-canvas-chart/issues/1) ([cea3ab6](https://github.com/chandq/gantt-canvas-chart/commit/cea3ab64b212a587ceb14f01059a5c37da6fa0df))
+* optimize tooltip for mouse hover, support fixed position with keyboard button ([a0d85c6](https://github.com/chandq/gantt-canvas-chart/commit/a0d85c6e0585bb33948ec73259d3595f612a28b5))
+
 ### [1.6.2](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.1...v1.6.2) (2025-12-23)
 
 
