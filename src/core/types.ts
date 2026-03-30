@@ -60,6 +60,8 @@ export interface GanttConfig {
   enabledLoadMore?: [LoadMoreDirection?, LoadMoreDirection?, LoadMoreDirection?]
   viewFactors?: { Day: number, Week: number, Month: number, Year: number },
   tooltipFormat?: null | ((task: Row, date: Date, config: GanttConfig) => string);
+  tooltipMaxHeight?: string; // Tooltip maximum height, default '80vh'
+  tooltipFreezeKey?: 'ctrl' | 'cmd' | 'alt' | 'shift'; // Key to freeze tooltip position, default 'ctrl'
 }
 
 export interface TaskPosition {

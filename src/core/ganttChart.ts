@@ -37,6 +37,8 @@ export class GanttChart {
   private tooltip: HTMLElement;
   private scrolling: boolean;
   private showTooltip: boolean;
+  private tooltipFrozen: boolean;
+  private isFreezeKeyDown: boolean;
 
   private headerCtx: CanvasRenderingContext2D;
   private mainCtx: CanvasRenderingContext2D;
@@ -106,6 +108,8 @@ export class GanttChart {
     this.data = data;
     this.scrolling = false;
     this.showTooltip = false;
+    this.tooltipFrozen = false;
+    this.isFreezeKeyDown = false;
     this.config = {
       viewMode: 'Month',
       rowHeight: 48,
@@ -132,10 +136,11 @@ export class GanttChart {
       xGap: 0,
       enabledLoadMore: [],
       viewFactors: { Day: 80, Week: 20, Month: 15, Year: 6 },
-
       planBorderColor: '#C1EFCF',
       actualBgColor: '#5AC989',
       headerBgColor: '#f9f9f9',
+      tooltipMaxHeight: '80vh',
+      tooltipFreezeKey: 'ctrl',
       ...config
     };
     this.updateLoadMoreConf()
@@ -146,6 +151,10 @@ export class GanttChart {
     const tooltip = document.createElement('div');
     // tooltip.setAttribute('id', '__gantt-tooltip');
     tooltip.classList.add('__gantt-tooltip');
+    tooltip.style.maxHeight = this.config.tooltipMaxHeight;
+    tooltip.style.overflowY = 'auto';
+    tooltip.addEventListener('wheel', this.handleTooltipScroll);
+    tooltip.addEventListener('scroll', this.handleTooltipScroll);
     document.body.appendChild(tooltip);
     this.tooltip = tooltip!;
     this.mainCanvas.style.top = `${this.config.headerHeight}px`;
@@ -179,6 +188,9 @@ export class GanttChart {
     this.horizontalScrollTo = this.horizontalScrollTo.bind(this);
     this.verticalScrollTo = this.verticalScrollTo.bind(this);
     this.handleResize = this.handleResize.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
+    this.handleTooltipScroll = this.handleTooltipScroll.bind(this);
 
     this.init();
   }
@@ -235,6 +247,8 @@ export class GanttChart {
     if (this.config.showTooltip) {
       this.mainCanvas.addEventListener('mousemove', this.handleMouseMove);
       this.mainCanvas.addEventListener('mouseleave', this.handleMouseLeave);
+      document.addEventListener('keydown', this.handleKeyDown);
+      document.addEventListener('keyup', this.handleKeyUp);
     }
   }
 
@@ -289,6 +303,16 @@ export class GanttChart {
     this.container.removeEventListener('scroll', this.handleScroll);
     this.mainCanvas.removeEventListener('mousemove', this.handleMouseMove);
     this.mainCanvas.removeEventListener('mouseleave', this.handleMouseLeave);
+    document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keyup', this.handleKeyUp);
+
+    if (this.tooltip) {
+      this.tooltip.removeEventListener('wheel', this.handleTooltipScroll);
+      this.tooltip.removeEventListener('scroll', this.handleTooltipScroll);
+      if (this.tooltip.parentNode) {
+        this.tooltip.parentNode.removeChild(this.tooltip);
+      }
+    }
 
     this.data = [];
     this.taskMap.clear();
@@ -393,7 +417,8 @@ export class GanttChart {
 
 
   private handleScroll(e: Event): void {
-    if (this.showTooltip) {
+
+    if (this.showTooltip && !this.tooltipFrozen) {
       this.handleMouseLeave();
     }
     const target = e.target as HTMLElement;
@@ -425,6 +450,10 @@ export class GanttChart {
       this.render(true)
       this.scrolling = false;
     });
+  }
+
+  private handleTooltipScroll(e: Event): void {
+    e.stopPropagation();
   }
   //  checkScrollLoad method
   private async checkScrollLoad(): Promise<void> {
@@ -1292,7 +1321,7 @@ export class GanttChart {
   }
 
   private handleMouseMove(e: MouseEvent): void {
-
+    if (this.tooltipFrozen) return;
     if (this.scrolling) {
       return
     }
@@ -1356,13 +1385,64 @@ export class GanttChart {
       this.tooltip.style.background = '#fff';
       this.tooltip.style.color = '#000'
     }
+
+    const padding = 15;
     const tipRect = this.tooltip.getBoundingClientRect();
-    let x = e.clientX + 15,
-      y = e.clientY + 15;
-    if (x + tipRect.width > window.innerWidth) x = e.clientX - 15 - tipRect.width;
-    if (y + tipRect.height > window.innerHeight) y = e.clientY - 15 - tipRect.height;
-    this.tooltip.style.left = `${x + this.config.offsetLeft}px`;
-    this.tooltip.style.top = `${y + this.config.offsetTop}px`;
+
+    let left = e.clientX + padding + this.config.offsetLeft;
+    let top = e.clientY + padding + this.config.offsetTop;
+
+    if (left + tipRect.width > window.innerWidth) {
+      left = e.clientX - padding - tipRect.width + this.config.offsetLeft;
+    }
+
+    if (left < 0) {
+      left = 0;
+    }
+
+    if (top + tipRect.height > window.innerHeight) {
+      top = e.clientY - padding - tipRect.height + this.config.offsetTop;
+    }
+
+    if (top < 0) {
+      top = 0;
+    }
+
+    this.tooltip.style.left = `${left}px`;
+    this.tooltip.style.top = `${top}px`;
+  }
+
+  private handleKeyDown(e: KeyboardEvent): void {
+    const isFreezeKey = this.isFreezeKeyPressed(e);
+    if (isFreezeKey && !this.isFreezeKeyDown) {
+      this.isFreezeKeyDown = true;
+      if (this.showTooltip) {
+        this.tooltipFrozen = true;
+      }
+    }
+  }
+
+  private handleKeyUp(e: KeyboardEvent): void {
+    const isFreezeKey = this.isFreezeKeyPressed(e);
+    if (isFreezeKey) {
+      this.isFreezeKeyDown = false;
+      this.tooltipFrozen = false;
+    }
+  }
+
+  private isFreezeKeyPressed(e: KeyboardEvent): boolean {
+    switch (this.config.tooltipFreezeKey) {
+      case 'ctrl':
+        return e.key === 'Control';
+      case 'cmd':
+        return e.key === 'Meta';
+      case 'alt':
+        return e.key === 'Alt';
+      case 'shift':
+        return e.key === 'Shift';
+      default:
+        return e.key === 'Control';
+    }
   }
 
   private getTaskTooltipHtml(task: Task): string {
@@ -1384,6 +1464,9 @@ export class GanttChart {
   }
 
   private handleMouseLeave(): void {
+    if (this.tooltipFrozen) {
+      return
+    }
     this.tooltip.style.display = 'none';
     this.showTooltip = false;
   }
