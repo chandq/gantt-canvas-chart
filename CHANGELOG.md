@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.4](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.3...v1.6.4) (2026-03-31)
+
+
+### Bug Fixes
+
+* optimize tooltip panel position for micro-app page ([daa5370](https://github.com/chandq/gantt-canvas-chart/commit/daa5370410017ecd91e818991e966dd52b8a572f))
+* optimize ui ([746c99e](https://github.com/chandq/gantt-canvas-chart/commit/746c99e5525a01da2101c0ccd9c406817c5811a4))
+
 ### [1.6.3](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.2...v1.6.3) (2026-03-30)
 
 
