@@ -1392,15 +1392,15 @@ export class GanttChart {
     let left = e.clientX + padding + this.config.offsetLeft;
     let top = e.clientY + padding + this.config.offsetTop;
 
-    if (left + tipRect.width > window.innerWidth) {
-      left = e.clientX - padding - tipRect.width + this.config.offsetLeft;
+    if (left - 2 * this.config.offsetLeft + 300 > window.innerWidth) {
+      left = e.clientX - padding - 300 + this.config.offsetLeft;
     }
 
     if (left < 0) {
       left = 0;
     }
 
-    if (top + tipRect.height > window.innerHeight) {
+    if (top - 2 * this.config.offsetTop + tipRect.height > window.innerHeight) {
       top = e.clientY - padding - tipRect.height + this.config.offsetTop;
     }
 
