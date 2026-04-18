@@ -5,8 +5,12 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches: [main]
+    paths:
+      - 'src/**' # 仅当 src 目录下的文件变化时触发
   pull_request:
     branches: [main]
+    paths:
+      - 'src/**' # 仅当 src 目录下的文件变化时触发
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
