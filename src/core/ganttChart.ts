@@ -170,7 +170,6 @@ export class GanttChart {
     this.visibleDateRange = { start: new Date(), end: new Date() };
     this.today = new Date(new Date().setHours(0, 0, 0, 0));
     this.devicePixelRatio = window.devicePixelRatio || 1;
-
     this.viewportWidth = 0;
     this.viewportHeight = 0;
     this.totalWidth = 0;
