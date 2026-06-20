@@ -2,6 +2,9 @@
 
 A high-performance Gantt chart implementation using HTML5 Canvas with virtual rendering for optimal performance. This component is framework-agnostic and can be integrated into any web application regardless of the technology stack.
 
+[![release status](https://github.com/chandq/gantt-canvas-chart/actions/workflows/release.yml/badge.svg)](https://github.com/chandq/gantt-canvas-chart/actions/workflows/release.yml)
+[![gantt-canvas-chart](https://img.shields.io/github/package-json/v/chandq/gantt-canvas-chart?style=flat-square)](https://www.npmjs.com/package/gantt-canvas-chart)
+
 ## Features
 
 ### High-Performance Virtual Rendering
