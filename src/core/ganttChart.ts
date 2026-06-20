@@ -101,7 +101,6 @@ export class GanttChart {
     rootContainer.classList.add('__gantt-chart-wrapper');
     rootContainer.appendChild(container);
 
-
     this.resizeObserver = null;
     this.rootContainer = rootContainer;
     this.container = container;
@@ -158,7 +157,6 @@ export class GanttChart {
     document.body.appendChild(tooltip);
     this.tooltip = tooltip!;
     this.mainCanvas.style.top = `${this.config.headerHeight}px`;
-
     this.headerCtx = this.headerCanvas.getContext('2d')!;
     this.mainCtx = this.mainCanvas.getContext('2d')!;
 
