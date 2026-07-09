@@ -2,6 +2,7 @@
   "name": "gantt-canvas-chart",
   "version": "1.6.5",
   "author": "chandq",
+  "license": "MIT",
   "description": "High performance Gantt chart component based on Canvas, can be applied to any framework",
   "type": "module",
   "main": "dist/index.es.js",
@@ -36,7 +37,7 @@
     "type": "git",
     "url": "git+https://github.com/chandq/gantt-canvas-chart.git"
   },
-  "license": "MIT",
+  "homepage": "https://chandq.github.io/gantt-canvas-chart/",
   "bugs": {
     "url": "https://github.com/chandq/gantt-canvas-chart/issues"
   },
