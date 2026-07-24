@@ -147,13 +147,14 @@ export class GanttChart {
     this.headerCanvas = headerCanvas as HTMLCanvasElement;
     this.mainCanvas = mainCanvas as HTMLCanvasElement;
     this.scrollDummy = scrollEl!;
+    this.handleTooltipScroll = this.handleTooltipScroll.bind(this);
     const tooltip = document.createElement('div');
     // tooltip.setAttribute('id', '__gantt-tooltip');
     tooltip.classList.add('__gantt-tooltip');
     tooltip.style.maxHeight = this.config.tooltipMaxHeight;
     tooltip.style.overflowY = 'auto';
-    tooltip.addEventListener('wheel', this.handleTooltipScroll);
-    tooltip.addEventListener('scroll', this.handleTooltipScroll);
+    tooltip.addEventListener('wheel', this.handleTooltipScroll, { passive: false });
+    tooltip.addEventListener('scroll', this.handleTooltipScroll, { passive: false });
     document.body.appendChild(tooltip);
     this.tooltip = tooltip!;
     this.mainCanvas.style.top = `${this.config.headerHeight}px`;
@@ -187,7 +188,7 @@ export class GanttChart {
     this.handleResize = this.handleResize.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
-    this.handleTooltipScroll = this.handleTooltipScroll.bind(this);
+    this.handleCanvasWheel = this.handleCanvasWheel.bind(this);
 
     this.init();
   }
@@ -244,8 +245,20 @@ export class GanttChart {
     if (this.config.showTooltip) {
       this.mainCanvas.addEventListener('mousemove', this.handleMouseMove);
       this.mainCanvas.addEventListener('mouseleave', this.handleMouseLeave);
+      this.mainCanvas.addEventListener('wheel', this.handleCanvasWheel, { passive: false });
       document.addEventListener('keydown', this.handleKeyDown);
       document.addEventListener('keyup', this.handleKeyUp);
+    }
+  }
+
+  private handleCanvasWheel(e: WheelEvent) {
+    if (this.tooltipFrozen) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // manually scroll the tooltip
+      this.tooltip.scrollTop += e.deltaY;
+      return;
     }
   }
 
@@ -300,6 +313,7 @@ export class GanttChart {
     this.container.removeEventListener('scroll', this.handleScroll);
     this.mainCanvas.removeEventListener('mousemove', this.handleMouseMove);
     this.mainCanvas.removeEventListener('mouseleave', this.handleMouseLeave);
+    this.mainCanvas.removeEventListener('wheel', this.handleCanvasWheel);
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);
 
@@ -450,6 +464,7 @@ export class GanttChart {
   }
 
   private handleTooltipScroll(e: Event): void {
+    e.preventDefault();
     e.stopPropagation();
   }
   //  checkScrollLoad method
