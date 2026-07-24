@@ -1,6 +1,6 @@
 {
   "name": "gantt-canvas-chart",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "author": "chandq",
   "license": "MIT",
   "description": "High performance Gantt chart component based on Canvas, can be applied to any framework",

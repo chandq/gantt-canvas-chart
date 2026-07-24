@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.6](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.5...v1.6.6) (2026-07-24)
+
+
+### Bug Fixes
+
+* issue of tooltip panel inner scroll ([5846608](https://github.com/chandq/gantt-canvas-chart/commit/58466080f63d8dad5b43fdc18df6cc5815616fc0))
+
 ### [1.6.5](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.4...v1.6.5) (2026-06-20)
 
 ### [1.6.4](https://github.com/chandq/gantt-canvas-chart/compare/v1.6.3...v1.6.4) (2026-03-31)
